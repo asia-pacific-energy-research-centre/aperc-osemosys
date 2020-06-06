@@ -22,20 +22,15 @@
 *
 * declarations for sets, parameters, variables
 $offlisting
-$include osemosys_dec.gms
-* specify Utopia Model data
 
-$if not set gdxincname $abort 'no include file name for data file provided'
-$gdxin %gdxincname%
-*$gdxin apec.gdx
-$load DAILYTIMEBRACKET DAYTYPE REGION YEAR FUEL MODE_OF_OPERATION EMISSION SEASON STORAGE TECHNOLOGY TIMESLICE InputActivityRatio AccumulatedAnnualDemand AnnualEmissionLimit AnnualExogenousEmission AvailabilityFactor CapacityFactor CapacityofOneTechnologyUnit CapacityToActivityUnit CapitalCost CapitalCostStorage Conversionld Conversionlh Conversionls DaysInDayType DaySplit DepreciationMethod DiscountRate EmissionActivityRatio EmissionsPenalty FixedCost MinStorageCharge ModelPeriodEmissionLimit ModelPeriodExogenousEmission OperationalLife OperationalLifeStorage OutputActivityRatio REMinProductionTarget ReserveMargin ReserveMarginTagFuel ReserveMarginTagTechnology ResidualCapacity ResidualStorageCapacity RETagFuel RETagTechnology SpecifiedAnnualDemand SpecifiedDemandProfile StorageLevelStart StorageMaxChargeRate StorageMaxDischargeRate TechnologyFromStorage TechnologyToStorage TotalAnnualMaxCapacity TotalAnnualMaxCapacityInvestment TotalAnnualMinCapacity TotalTechnologyAnnualActivityUpperLimit TotalTechnologyModelPeriodActivityLowerLimit TotalTechnologyModelPeriodActivityUpperLimit TotalAnnualMinCapacityInvestment TotalTechnologyAnnualActivityLowerLimit TradeRoute VariableCost YearSplit
-$gdxin
+$include src\osemosys_dec.gms
+* specify model data
+$INCLUDE src\data_import.gms
+display YEAR,REGION,OperationalLife,AccumulatedAnnualDemand;
+$exit
 
 $include defaults.gms
 
-*$exit
-
-*$include utopia_data.txt
 * define model equations
 $offlisting
 $include osemosys_equ.gms
@@ -43,10 +38,10 @@ $include osemosys_equ.gms
 * solve the model
 *option lp = cbc
 model osemosys /all/;
-*$exit
 
-option limrow=0, limcol=0, solprint=off;
+
+option limrow=0, limcol=0, solprint=off,LP=CBC;
 osemosys.optfile=1;
 solve osemosys minimizing z using LP;
 * create results in file SelResults.CSV
-*$include osemosys_res.gms
+$include osemosys_res.gms
