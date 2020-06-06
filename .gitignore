@@ -1,3 +1,14 @@
+data/
+env/
+*.gpr
+*.~gm
+*.lxi
+*.lst
+*.log 
+task*
+*.gdx
+gams.dat
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
