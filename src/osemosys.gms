@@ -26,7 +26,7 @@ $offlisting
 $include src\osemosys_dec.gms
 * specify model data
 $INCLUDE src\data_import.gms
-display YEAR,REGION,OperationalLife,AccumulatedAnnualDemand;
+display YEAR,REGION,OperationalLife,AccumulatedAnnualDemand,TotalTechnologyAnnualActivityUp;
 $exit
 
 $include defaults.gms

@@ -108,7 +108,7 @@ parameter TotalAnnualMinCapacityInvestment(REGION,TECHNOLOGY,YEAR);
 *
 * ######## Activity Constraints #############
 *
-parameter TotalTechnologyAnnualActivityUpperLimit(REGION,TECHNOLOGY,YEAR);
+parameter TotalTechnologyAnnualActivityUp(REGION,TECHNOLOGY,YEAR);
 parameter TotalTechnologyAnnualActivityLowerLimit(REGION,TECHNOLOGY,YEAR);
 parameter TotalTechnologyModelPeriodActivityUpperLimit(REGION,TECHNOLOGY);
 parameter TotalTechnologyModelPeriodActivityLowerLimit(REGION,TECHNOLOGY);

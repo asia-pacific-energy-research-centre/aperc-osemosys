@@ -4,11 +4,12 @@ set=TECHNOLOGY rng=TECHNOLOGY!A2 Rdim=1
 set=REGION rng=REGION!A2 Rdim=1
 set=FUEL rng=FUEL! rdim=1
 par=OperationalLife rng=OperationalLife! rdim=2
+par=TotalTechnologyAnnualActivityUp rng=TotalTechnologyAnnualActivityUp! rdim=2 cdim=1
 $offecho
 
 $call GDXXRW C:\Users\david\GitHub\aperc-osemosys\data\master-data-UTOPIA.xlsx @task1.txt trace=3
 $gdxin master-data-UTOPIA.gdx
-$load YEAR TECHNOLOGY REGION FUEL OperationalLife
+$load YEAR TECHNOLOGY REGION FUEL OperationalLife TotalTechnologyAnnualActivityUp
 $gdxin
 
 $onecho > task2.txt

@@ -35,7 +35,7 @@ $offtext
 *
 TotalAnnualMaxCapacityInvestment(r,t,y)$(TotalAnnualMaxCapacityInvestment(r,t,y) = 0) = 99999;
 TotalAnnualMinCapacityInvestment(r,t,y)$(TotalAnnualMinCapacityInvestment(r,t,y) = 0) = 0;
-TotalTechnologyAnnualActivityUpperLimit(r,t,y)$(TotalTechnologyAnnualActivityUpperLimit(r,t,y) = 0) = 99999;
+TotalTechnologyAnnualActivityUp(r,t,y)$(TotalTechnologyAnnualActivityUp(r,t,y) = 0) = 99999;
 TotalTechnologyAnnualActivityLowerLimit(r,t,y)$(TotalTechnologyAnnualActivityLowerLimit(r,t,y) = 0) = 0;
 TotalTechnologyModelPeriodActivityUpperLimit(r,t)$(TotalTechnologyModelPeriodActivityUpperLimit(r,t) = 0) = 99999;
 TotalTechnologyModelPeriodActivityLowerLimit(r,t)$(TotalTechnologyModelPeriodActivityLowerLimit(r,t) = 0) = 0;
