@@ -72,7 +72,12 @@ pip install PyYAML
 4. Add a description and version to the `Name` field.
 
 ### Run the model
-5. Run the model with the following command: 
+5. Navigate to the `src` directory:
+```
+cd src
+```
+
+6. Run the model with the following command: 
 ```
 python main.py
 ```

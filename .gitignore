@@ -12,6 +12,7 @@ task*
 *.dat
 ._.DS_Store
 /tmp/
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
