@@ -1,13 +1,4 @@
-[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/asia-pacific-energy-research-centre/aperc-data-science-project/master?p=pitchme&grs=github)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/asia-pacific-energy-research-centre/aperc-data-science-project/master?urlpath=lab)
-
-# aperc-data-science-project
-
-Repository containing scaffolding for a Python 3-based data science project using the [scikit-learn](https://scikit-learn.org/stable/) ecosystem. 
-
-## Creating a new project from this template
-
-Simply follow the [instructions](https://help.github.com/en/articles/creating-a-repository-from-a-template) to create a new project repository from this template.
+# APERC OSeMOSYS
 
 ## Project organization
 
@@ -28,8 +19,8 @@ Project organization is based on ideas from [_Good Enough Practices for Scientif
 
 ### Creating the Conda environment
 
-After adding any necessary dependencies to the Conda `environment.yml` file you can create the 
-environment in a sub-directory of your project directory by running the following command.
+The `environment.yml` contains the necessary dependencies. You can create the 
+environment in a sub-directory of your project directory by running the following command:
 
 ```bash
 $ conda env create --prefix ./env --file environment.yml
@@ -61,12 +52,3 @@ The list of explicit dependencies for the project are listed in the `environment
 ```bash
 conda list --prefix ./env
 ```
-
-## Using Docker
-
-In order to build Docker images for your project and run containers you will need to install 
-[Docker](https://docs.docker.com/docker-for-windows/install/) and 
-[Docker Compose](https://docs.docker.com/compose/install/).
-
-Detailed instructions for using Docker to build and image and launch containers can be found in 
-the `docker/README.md`.
