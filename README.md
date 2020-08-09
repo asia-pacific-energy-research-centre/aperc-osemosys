@@ -53,6 +53,14 @@ The list of explicit dependencies for the project are listed in the `environment
 conda list --prefix ./ose-env
 ```
 
+### Installing other packages
+
+This only needs to be performed once. With the `ose-env` environment active, run the following command:
+
+```
+pip install PyYAML
+```
+
 ## Running the model
 
 ### Add the data
