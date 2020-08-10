@@ -1,0 +1,18 @@
+ForecastPeriod: 2018 #2017-2050
+Economies: 01_AUS # see data sheets for economy abbreviations
+Scenario: Current #Current or Announced
+Solver: glpk # glpk or cbc
+Name: repotest #Sector(s)vX.Y.Z; Sectors = AGR,BLD,IND,POW,REF,SUP,TRN,OWN,ALL
+FilePaths:
+### Demand sectors:
+    AGR: '../data/data-sheet-agriculture.xlsx'
+    #BLD: '../data/data-sheet-buildings.xlsx'
+    #IND: '../data/data-sheet-industry.xlsx'
+    #TRN: '../data/data-sheet-transport.xlsx'
+    XXX: '../data/data-sheet-xxx.xlsx' # always use with a demand sector
+
+### Transformation and supply sectors:
+    #POW: '../data/data-sheet-power.xlsx'
+    #REF: '../data/data-sheet-refining.xlsx'
+    #SUP: '../data/data-sheet-supply.xlsx'
+    #YYY: '../data/data-sheet-yyy.xlsx' #always use with a transformation and/or supply sector
