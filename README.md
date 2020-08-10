@@ -1,13 +1,4 @@
-[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/asia-pacific-energy-research-centre/aperc-data-science-project/master?p=pitchme&grs=github)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/asia-pacific-energy-research-centre/aperc-data-science-project/master?urlpath=lab)
-
-# aperc-data-science-project
-
-Repository containing scaffolding for a Python 3-based data science project using the [scikit-learn](https://scikit-learn.org/stable/) ecosystem. 
-
-## Creating a new project from this template
-
-Simply follow the [instructions](https://help.github.com/en/articles/creating-a-repository-from-a-template) to create a new project repository from this template.
+# APERC OSeMOSYS
 
 ## Project organization
 
@@ -24,22 +15,22 @@ Project organization is based on ideas from [_Good Enough Practices for Scientif
 9. Put project source code in the `src` directory.
 10. Name all files to reflect their content or function.
 
-## Using Conda
+## Getting started
 
 ### Creating the Conda environment
 
-After adding any necessary dependencies to the Conda `environment.yml` file you can create the 
-environment in a sub-directory of your project directory by running the following command.
+The `environment.yml` contains the necessary dependencies. You can create the 
+environment in a sub-directory of your project directory by running the following command:
 
 ```bash
-$ conda env create --prefix ./env --file environment.yml
+conda env create --prefix ./ose-env --file environment.yml
 ```
 
 Once the new environment has been created you can activate the environment with the following 
-command.
+command:
 
 ```bash
-$ conda activate ./env
+conda activate ./ose-env
 ```
 
 Note that the `env` directory is *not* under version control as it can always be re-created from 
@@ -51,7 +42,7 @@ If you add (remove) dependencies to (from) the `environment.yml` file after the 
 already been created, then you can update the environment with the following command.
 
 ```bash
-$ conda env update --prefix ./env --file environment.yml --prune
+conda env update --prefix ./ose-env --file environment.yml --prune
 ```
 
 ### Listing the full contents of the Conda environment
@@ -59,14 +50,38 @@ $ conda env update --prefix ./env --file environment.yml --prune
 The list of explicit dependencies for the project are listed in the `environment.yml` file. To see the full list of packages installed into the environment run the following command.
 
 ```bash
-conda list --prefix ./env
+conda list --prefix ./ose-env
 ```
 
-## Using Docker
+### Installing other packages
 
-In order to build Docker images for your project and run containers you will need to install 
-[Docker](https://docs.docker.com/docker-for-windows/install/) and 
-[Docker Compose](https://docs.docker.com/compose/install/).
+This only needs to be performed once. With the `ose-env` environment active, run the following command:
 
-Detailed instructions for using Docker to build and image and launch containers can be found in 
-the `docker/README.md`.
+```
+pip install PyYAML
+```
+
+## Running the model
+
+### Add the data
+1. Place all data in the `data` directory. This directory is *not* under version control.
+2. Edit the path to data sheets in `model_config.yml`.
+
+### Configure the model run
+3. Adjust the number of years and economies to solve.
+4. Add a description and version to the `Name` field.
+
+### Run the model
+5. Navigate to the `src` directory:
+```
+cd src
+```
+
+6. Run the model with the following command: 
+```
+python main.py
+```
+
+## Accessing results
+
+Results are stored in the `results` directory. This directory is *not* under version control.

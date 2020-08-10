@@ -1,0 +1,66 @@
+#AccumulatedAnnualDemand:
+#    indices: [REGION,FUEL,YEAR,VALUE]
+#    type: param
+#    dtype: float
+#    default: 0
+AccumulatedNewCapacity:
+    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
+    type: var
+    dtype: float
+AnnualEmissions:
+    indices: [REGION,EMISSION,YEAR,VALUE]
+    type: var
+    dtype: float
+AnnualTechnologyEmission:
+    indices: [REGION,TECHNOLOGY,EMISSION,YEAR,VALUE]
+    type: var
+    dtype: float
+CapitalInvestment:
+    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
+    type: var
+    dtype: float
+Demand:
+    indices: [REGION,TIMESLICE,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
+DiscountedCapitalInvestment:
+    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
+    type: var
+    dtype: float
+NewCapacity:
+    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
+    type: var
+    dtype: float
+ProductionByTechnology:
+    indices: [REGION,TIMESLICE,TECHNOLOGY,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
+ProductionAnnual:
+    indices: [REGION,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
+#ProductionByTechnologyAnnual:
+#    indices: [REGION,TECHNOLOGY,FUEL,YEAR,VALUE]
+#    type: var
+#    dtype: float
+#SpecifiedAnnualDemand:
+#    indices: [REGION,FUEL,YEAR,VALUE]
+#    type: param
+#    dtype: float
+#    default: 0
+TotalCapacityAnnual:
+    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
+    type: var
+    dtype: float
+TotalTechnologyAnnualActivity:
+    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
+    type: var
+    dtype: float
+UseByTechnology:
+    indices: [REGION,TIMESLICE,TECHNOLOGY,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
+UseAnnual:
+    indices: [REGION,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
