@@ -509,14 +509,17 @@ def define_osemosys():
         model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
     )
     model.OperatingCost = Var(
-        model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        #model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        model.REGION, model.TECHNOLOGY, model.YEAR, initialize=0.0
     )
     model.DiscountedOperatingCost = Var(
-        model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        #model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        model.REGION, model.TECHNOLOGY, model.YEAR, initialize=0.0
     )
     
     model.AnnualVariableOperatingCost = Var(
-        model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        #model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        model.REGION, model.TECHNOLOGY, model.YEAR, initialize=0.0
     )
     model.AnnualFixedOperatingCost = Var(
         model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
@@ -531,7 +534,8 @@ def define_osemosys():
     )
     
     model.TotalDiscountedCostByTechnology = Var(
-        model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        #model.REGION, model.TECHNOLOGY, model.YEAR, domain=NonNegativeReals, initialize=0.0
+        model.REGION, model.TECHNOLOGY, model.YEAR, initialize=0.0
     )
     model.TotalDiscountedCost = Var(
         model.REGION, model.YEAR, domain=NonNegativeReals, initialize=0.0
