@@ -4,7 +4,7 @@ import pandas as pd
 def configure_run():
     print('\n-- Reading in data sheets...')
 
-    with open('.\data_config.yml') as file:
+    with open('./data_config.yml') as file:
         data_config = yaml.load(file, Loader=yaml.FullLoader)
     keep_dict={}
     for key,value in data_config.items():
