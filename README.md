@@ -68,7 +68,7 @@ pip install PyYAML
 2. Edit the path to data sheets in `model_config.yml`.
 
 ### Configure the model run
-3. Adjust the number of years and economies to solve.
+3. Adjust the number of years and economies to solve in `model_config.yml`.
 4. Add a description and version to the `Name` field.
 
 ### Run the model
