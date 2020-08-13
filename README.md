@@ -36,7 +36,7 @@ conda activate ./ose-env
 Note that the `env` directory is *not* under version control as it can always be re-created from 
 the `environment.yml` file as necessary.
 
-### Updating the Conda environment
+#### Updating the Conda environment
 
 If you add (remove) dependencies to (from) the `environment.yml` file after the environment has 
 already been created, then you can update the environment with the following command.
@@ -45,7 +45,7 @@ already been created, then you can update the environment with the following com
 conda env update --prefix ./ose-env --file environment.yml --prune
 ```
 
-### Listing the full contents of the Conda environment
+#### Listing the full contents of the Conda environment
 
 The list of explicit dependencies for the project are listed in the `environment.yml` file. To see the full list of packages installed into the environment run the following command.
 
@@ -64,12 +64,17 @@ pip install PyYAML
 ## Running the model
 
 ### Add the data
-1. Place all data in the `data` directory. This directory is *not* under version control.
-2. Edit the path to data sheets in `model_config.yml`.
+Place all data in the `data` directory. This directory is *not* under version control.
+
 
 ### Configure the model run
-3. Adjust the number of years and economies to solve in `model_config.yml`.
-4. Add a description and version to the `Name` field.
+Adjust the run parameters by updating the following fields in the `model_config.yml` file:
+- `ForecastPeriod`: the forecast period. Valid years are between 2017 and 2050.
+- `Economies`: the economy abbreviation.
+- `Scenario`: either "Current" or "Announced".
+- `Solver`: glpk. CBC is also an option but will need to be installed separately.
+- `Name`: choose a descriptive name for your model run.
+- `FilePaths`: comment and uncomment the files you want to run. Note that demand files must be run with the "xxx" file. Power, Refining, and Supply must be run with the "yyy" file.
 
 ### Run the model
 5. Navigate to the `src` directory:
