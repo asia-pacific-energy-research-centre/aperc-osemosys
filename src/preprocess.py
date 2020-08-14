@@ -47,22 +47,28 @@ def create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
                 id_list = contents[key]['indices']
                 id_list.remove('YEAR')
                 _df = combined_data[key].drop(['UNITS','NOTES'],axis=1)
-                dict_of_df[key] = pd.melt(_df,id_vars=id_list,var_name='YEAR',value_name='VALUE').replace({np.nan:''})
+                dict_of_df[key] = pd.melt(_df,id_vars=id_list,var_name='YEAR',value_name='VALUES').replace({np.nan:''})
                 contents[key]['indices'].append('YEAR')
             else:
-                dict_of_df[key] = combined_data[key]
+                _df = combined_data[key]
+                _df = _df.rename(columns={'VALUE':'VALUES'})
+                dict_of_df[key] = _df
         else:
             if contents[key]['dtype'] == 'str':
-                dict_of_df[key] = combined_data[key]
+                _df = combined_data[key]
+                _df = _df.rename(columns={'VALUE':'VALUES'})
+                dict_of_df[key] = _df
             else:
-                dict_of_df[key] = combined_data[key]
+                _df = combined_data[key]
+                _df = _df.rename(columns={'VALUE':'VALUES'})
+                dict_of_df[key] = _df
 
     # drop duplicates
     for key,value in contents.items():
         if contents[key]['type'] == 'set':
             _df = dict_of_df[key]
             _df = _df.reset_index(drop=True)
-            _df = _df.drop_duplicates(subset=['VALUE'])
+            _df = _df.drop_duplicates(subset=['VALUES'])
             dict_of_df[key] = _df
 
     # adjust the model horizon
@@ -81,7 +87,7 @@ def create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
                 #print('set')
                 #print(key)
                 #display(__df)
-                ___df = __df[__df['VALUE']<=subset_of_years]
+                ___df = __df[__df['VALUES']<=subset_of_years]
                 dict_of_df[key] = ___df
 
     # select a subset of economies
@@ -103,7 +109,7 @@ def create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
                 #___df = __df[__df['RR'].isin(subset_of_economies)]
                 dict_of_df[key] = ___df
             elif key == 'REGION':
-                ___df = __df[__df['VALUE']==subset_of_economies]
+                ___df = __df[__df['VALUES']==subset_of_economies]
                 #___df = __df[__df['VALUE'].isin(subset_of_economies)]
                 dict_of_df[key] = ___df
 
@@ -112,9 +118,9 @@ def create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
     for key,value in contents.items():
         if contents[key]['type'] == 'param':
             index_list = contents[key]['indices']
-            data_dict[key] = dict_of_df[key].set_index(index_list).VALUE.to_dict()
+            data_dict[key] = dict_of_df[key].set_index(index_list).VALUES.to_dict()
         else:
-            data_dict[key] = {None: dict_of_df[key]["VALUE"].values.tolist()}
+            data_dict[key] = {None: dict_of_df[key]["VALUES"].values.tolist()}
     data = {None: data_dict}
     return data
 
