@@ -10,8 +10,11 @@ task*
 *.xlsx
 *.csv
 *.dat
+*.lp
+*.glpk
 ._.DS_Store
-/tmp/
+tmp/
+results/
 .vscode/
 
 # Byte-compiled / optimized / DLL files
