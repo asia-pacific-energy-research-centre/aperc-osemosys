@@ -107,7 +107,7 @@ EMISSION:
     type: set
     short: None
 EmissionActivityRatio:
-    indices: [REGION,TECHNOLOGY,EMISSION,MODE_OF_OPERATION,YEAR]
+    indices: [REGION,TECHNOLOGY,FUEL,MODE_OF_OPERATION,EMISSION,YEAR]
     type: param
     dtype: float
     default: 0
