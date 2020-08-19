@@ -184,8 +184,9 @@ def define_osemosys():
     model.EmissionActivityRatio = Param(
         model.REGION,
         model.TECHNOLOGY,
-        model.EMISSION,
+        model.FUEL,
         model.MODE_OF_OPERATION,
+        model.EMISSION,
         model.YEAR,
         default=0,
     )
@@ -570,8 +571,17 @@ def define_osemosys():
     model.AnnualTechnologyEmissionByMode = Var(
         model.REGION,
         model.TECHNOLOGY,
-        model.EMISSION,
+        model.FUEL,
         model.MODE_OF_OPERATION,
+        model.EMISSION,
+        model.YEAR,
+        domain=NonNegativeReals,
+        initialize=0.0,
+    )
+    model.AnnualTechnologyEmissionByFuel = Var(
+        model.REGION,
+        model.FUEL,
+        model.EMISSION,
         model.YEAR,
         domain=NonNegativeReals,
         initialize=0.0,
@@ -2012,31 +2022,53 @@ def define_osemosys():
     #########   		Emissions Accounting		##############
     
     
-    def AnnualEmissionProductionByMode_rule(model, r, t, e, m, y):
-        if model.EmissionActivityRatio[r, t, e, m, y] != 0:
+    def AnnualEmissionProductionByMode_rule(model, r, t, f, m, e, y):
+        if model.EmissionActivityRatio[r, t, f, m, e, y] != 0:
             return (
-                model.EmissionActivityRatio[r, t, e, m, y]
-                * model.TotalAnnualTechnologyActivityByMode[r, t, m, y]
-                == model.AnnualTechnologyEmissionByMode[r, t, e, m, y]
+                model.EmissionActivityRatio[r, t, f, m, e, y]
+                * model.UseByTechnologyAnnual[r, t, f, y]
+                == model.AnnualTechnologyEmissionByMode[r, t, f, m, e, y]
             )
         else:
-            return model.AnnualTechnologyEmissionByMode[r, t, e, m, y] == 0
+            return model.AnnualTechnologyEmissionByMode[r, t, f, m, e, y] == 0
     
     
     model.AnnualEmissionProductionByMode = Constraint(
         model.REGION,
         model.TECHNOLOGY,
-        model.EMISSION,
+        model.FUEL,
         model.MODE_OF_OPERATION,
+        model.EMISSION,
         model.YEAR,
         rule=AnnualEmissionProductionByMode_rule,
+    )
+    
+    
+    def AnnualEmissionProductionByFuel_rule(model, r, f, e, y):
+        return (
+            sum(
+                model.AnnualTechnologyEmissionByMode[r, t, f, m, e, y]
+                for m in model.MODE_OF_OPERATION
+                for t in model.TECHNOLOGY
+            )
+            == model.AnnualTechnologyEmissionByFuel[r, f, e, y]
+        )
+    
+    
+    model.AnnualEmissionProductionByFuel = Constraint(
+        model.REGION,
+        model.FUEL,
+        model.EMISSION,
+        model.YEAR,
+        rule=AnnualEmissionProductionByFuel_rule,
     )
     
     
     def AnnualEmissionProduction_rule(model, r, t, e, y):
         return (
             sum(
-                model.AnnualTechnologyEmissionByMode[r, t, e, m, y]
+                model.AnnualTechnologyEmissionByMode[r, t, f, m, e, y]
+                for f in model.FUEL
                 for m in model.MODE_OF_OPERATION
             )
             == model.AnnualTechnologyEmission[r, t, e, y]
@@ -2050,7 +2082,6 @@ def define_osemosys():
         model.YEAR,
         rule=AnnualEmissionProduction_rule,
     )
-    
     
     def EmissionPenaltyByTechAndEmission_rule(model, r, t, e, y):
         return (

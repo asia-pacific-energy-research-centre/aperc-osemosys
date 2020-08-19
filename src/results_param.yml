@@ -15,6 +15,10 @@ AnnualTechnologyEmission:
     indices: [REGION,TECHNOLOGY,EMISSION,YEAR,VALUE]
     type: var
     dtype: float
+AnnualTechnologyEmissionByFuel:
+    indices: [REGION,FUEL,EMISSION,YEAR,VALUE]
+    type: var
+    dtype: float
 CapitalInvestment:
     indices: [REGION,TECHNOLOGY,YEAR,VALUE]
     type: var
