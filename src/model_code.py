@@ -116,8 +116,8 @@ def define_osemosys():
         model.REGION, model.TECHNOLOGY, model.STORAGE, model.MODE_OF_OPERATION, default=0
     )
     model.StorageLevelStart = Param(model.REGION, model.STORAGE, default=0.0000001)
-    model.StorageMaxChargeRate = Param(model.REGION, model.STORAGE, default=999999)
-    model.StorageMaxDischargeRate = Param(model.REGION, model.STORAGE, default=999999)
+    model.StorageMaxChargeRate = Param(model.REGION, model.STORAGE, default=99999999)
+    model.StorageMaxDischargeRate = Param(model.REGION, model.STORAGE, default=99999999)
     model.MinStorageCharge = Param(model.REGION, model.STORAGE, model.YEAR, default=0)
     model.OperationalLifeStorage = Param(model.REGION, model.STORAGE, default=0)
     model.CapitalCostStorage = Param(model.REGION, model.STORAGE, model.YEAR, default=0)
@@ -132,7 +132,7 @@ def define_osemosys():
     )
     model.TotalAnnualMaxCapacity = Param(
         #model.REGION, model.TECHNOLOGY, model.YEAR, default=99999
-        model.REGION, model.TECHNOLOGY, model.YEAR, default=999999
+        model.REGION, model.TECHNOLOGY, model.YEAR, default=99999999
     )
     model.TotalAnnualMinCapacity = Param(
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
@@ -142,7 +142,7 @@ def define_osemosys():
     
     model.TotalAnnualMaxCapacityInvestment = Param(
         #model.REGION, model.TECHNOLOGY, model.YEAR, default=99999
-        model.REGION, model.TECHNOLOGY, model.YEAR, default=999999
+        model.REGION, model.TECHNOLOGY, model.YEAR, default=99999999
     )
     model.TotalAnnualMinCapacityInvestment = Param(
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
@@ -152,14 +152,14 @@ def define_osemosys():
     
     model.TotalTechnologyAnnualActivityUpperLimit = Param(
         #model.REGION, model.TECHNOLOGY, model.YEAR, default=99999
-        model.REGION, model.TECHNOLOGY, model.YEAR, default=999999
+        model.REGION, model.TECHNOLOGY, model.YEAR, default=99999999
     )
     model.TotalTechnologyAnnualActivityLowerLimit = Param(
         model.REGION, model.TECHNOLOGY, model.YEAR, default=0
     )
     model.TotalTechnologyModelPeriodActivityUpperLimit = Param(
         #model.REGION, model.TECHNOLOGY, default=99999
-        model.REGION, model.TECHNOLOGY, default=999999
+        model.REGION, model.TECHNOLOGY, default=99999999
     )
     model.TotalTechnologyModelPeriodActivityLowerLimit = Param(
         model.REGION, model.TECHNOLOGY, default=0
@@ -196,11 +196,11 @@ def define_osemosys():
     )
     model.AnnualEmissionLimit = Param(
         #model.REGION, model.EMISSION, model.YEAR, default=99999
-        model.REGION, model.EMISSION, model.YEAR, default=999999
+        model.REGION, model.EMISSION, model.YEAR, default=99999999
     )
     model.ModelPeriodExogenousEmission = Param(model.REGION, model.EMISSION, default=0)
     #model.ModelPeriodEmissionLimit = Param(model.REGION, model.EMISSION, default=99999)
-    model.ModelPeriodEmissionLimit = Param(model.REGION, model.EMISSION, default=999999)
+    model.ModelPeriodEmissionLimit = Param(model.REGION, model.EMISSION, default=99999999)
     
     ######################
     #   Model Variables  #
