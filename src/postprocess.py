@@ -75,6 +75,7 @@ def pivot_results(results_dfs):
 
 def write_results(results_tables, model_start,subset_of_economies,subset_of_years,run_name):
     with pd.ExcelWriter('../results/{}_{}_{}_{}_results.xlsx'.format(model_start,subset_of_economies,subset_of_years,run_name)) as writer:
+    #with pd.ExcelWriter('../results/{}_{}_{}_results.xlsx'.format(model_start,subset_of_years,run_name)) as writer:
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
     return None
