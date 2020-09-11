@@ -35,6 +35,18 @@ NewCapacity:
     indices: [REGION,TECHNOLOGY,YEAR,VALUE]
     type: var
     dtype: float
+#RateOfActivity:
+#    indices: [REGION,TIMESLICE,TECHNOLOGY,MODE_OF_OPERATION,YEAR,VALUE]
+#    type: var
+#    dtype: float
+#RateOfProductionByTechnology:
+#    indices: [REGION,TIMESLICE,TECHNOLOGY,FUEL,YEAR,VALUE]
+#    type: var
+#    dtype: float
+Production:
+    indices: [REGION,TIMESLICE,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
 ProductionByTechnology:
     indices: [REGION,TIMESLICE,TECHNOLOGY,FUEL,YEAR,VALUE]
     type: var
@@ -43,10 +55,10 @@ ProductionAnnual:
     indices: [REGION,FUEL,YEAR,VALUE]
     type: var
     dtype: float
-#ProductionByTechnologyAnnual:
-#    indices: [REGION,TECHNOLOGY,FUEL,YEAR,VALUE]
-#    type: var
-#    dtype: float
+ProductionByTechnologyAnnual:
+    indices: [REGION,TECHNOLOGY,FUEL,YEAR,VALUE]
+    type: var
+    dtype: float
 #SpecifiedAnnualDemand:
 #    indices: [REGION,FUEL,YEAR,VALUE]
 #    type: param
