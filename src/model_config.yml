@@ -20,6 +20,3 @@ FilePaths:
     #BIO: '../data/data-sheet-biorefining.xlsx'
     #SUP: '../data/data-sheet-supply.xlsx'
     #YYY: '../data/data-sheet-yyy.xlsx' #always use with a transformation and/or supply sector
-
-### UTOPIA for testing
-#    all: '../data/master-data-UTOPIA.xlsx'
