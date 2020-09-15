@@ -14,4 +14,3 @@ dependencies:
   - xlwt
   - Tornado
   - cloudpickle
-  - coincbc
