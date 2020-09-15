@@ -1,27 +1,12 @@
 ForecastPeriod: 2050
-Economies: 01_AUS
+Economies: 21_VN
 Scenario: Current #Current or Announced
-#Solver: glpk # glpk or cbc
-Name: v0.0.0 #Sector(s)vX.Y.Z; Sectors = AGR,BLD,IND,POW,REF,SUP,TRN,OWN,ALL
+Solver: glpk # glpk or cbc
+Name: CombinedDemands #Sector(s)vX.Y.Z; Sectors = AGR,BLD,IND,POW,REF,SUP,TRN,OWN,ALL
 FilePaths:
-## Results files ##
-### Demand sectors ###
-    #AGR: '../results/2020-08-09-122350_01_AUS_2050_AGRv0.1.0_results.xlsx'
-    #BLD: '../results/2020-08-09-122532_01_AUS_2050_BLDv0.1.0_results.xlsx'
-    ##IND: '../results/2020-08-09-122350_01_AUS_2050_AGRv0.1.0_results.xlsx'
-    #TRN: '../results/2020-08-09-122706_01_AUS_2050_TRNv0.1.0_results.xlsx'
-### Transformation and supply sectors ###
-    #POW: '../results/2020-08-09-122350_01_AUS_2050_AGRv0.1.0_results.xlsx'
-    #REF: '../results/2020-08-09-122350_01_AUS_2050_AGRv0.1.0_results.xlsx'
-    #SUP: '../results/2020-08-09-122350_01_AUS_2050_AGRv0.1.0_results.xlsx'
+    A: '../results/2020-09-09-214445_21_VN_2050_A_results.xlsx'
+    B: '../results/2020-09-09-181715_21_VN_2050_B_results.xlsx'
+    I: '../results/2020-09-09-213723_21_VN_2050_I_results.xlsx'
+    T: '../results/2020-09-09-181741_21_VN_2050_T_results.xlsx'
+    OPN: '../results/2020-09-09-184148_21_VN_2050_OPN_results.xlsx'
 
-## Input data files ##  -- not working --
-### Demand sectors ###
-    AGR: '../results/2020-08-09-122350_01_AUS_2050_AGRv0.1.0_inputs.xlsx'
-    BLD: '../results/2020-08-09-122532_01_AUS_2050_BLDv0.1.0_inputs.xlsx'
-    #IND: '../results/2020-08-09-122350_01_AUS_2050_INDv0.1.0_inputs.xlsx'
-    TRN: '../results/2020-08-09-122706_01_AUS_2050_TRNv0.1.0_inputs.xlsx'
-### Transformation and supply sectors ###
-    #POW: '../results/2020-08-09-122350_01_AUS_2050_POWv0.1.0_inputs.xlsx'
-    #REF: '../results/2020-08-09-122350_01_AUS_2050_REFv0.1.0_inputs.xlsx'
-    #SUP: '../results/2020-08-09-122350_01_AUS_2050_SUPv0.1.0_inputs.xlsx'
