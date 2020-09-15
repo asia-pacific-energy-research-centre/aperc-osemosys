@@ -1,8 +1,8 @@
-ForecastPeriod: 2018 #2017-2050
-Economies: 01_AUS # see data sheets for economy abbreviations
+ForecastPeriod: 2000 #2017-2050
+Economies: 01_AUS #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
 Scenario: Current #Current or Announced
 Solver: glpk # glpk or cbc
-Name: YourTestName #Sector(s)vX.Y.Z; Sectors = AGR,BLD,IND,POW,REF,SUP,TRN,OWN,ALL
+Name: ANameHere #CombinedPowRefSup 
 FilePaths:
 ### Demand sectors:
     #AGR: '../data/data-sheet-agriculture.xlsx'
@@ -10,6 +10,7 @@ FilePaths:
     #IND: '../data/data-sheet-industry.xlsx'
     #TRN: '../data/data-sheet-transport.xlsx'
     #OWN: '../data/data-sheet-ownuse.xlsx'
+    #PIP: '../data/data-sheet-pipeline transport.xlsx'
     #NON: '../data/data-sheet-nonspecified.xlsx'
     #XXX: '../data/data-sheet-xxx.xlsx' # always use with a demand sector
 
@@ -19,3 +20,6 @@ FilePaths:
     #BIO: '../data/data-sheet-biorefining.xlsx'
     #SUP: '../data/data-sheet-supply.xlsx'
     #YYY: '../data/data-sheet-yyy.xlsx' #always use with a transformation and/or supply sector
+
+### UTOPIA for testing
+#    all: '../data/master-data-UTOPIA.xlsx'
