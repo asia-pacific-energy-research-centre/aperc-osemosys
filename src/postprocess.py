@@ -16,7 +16,6 @@ def extract(instance):
 
     # extract duals
     __df = {}
-    print("Collecting dual values for EnergyBalanceEachYear4")
     for index in instance.EnergyBalanceEachYear4:
         __df[index] = instance.dual[instance.EnergyBalanceEachYear4[index]]
     __df = pd.DataFrame.from_dict({'VALUE':__df},orient='columns')
