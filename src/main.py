@@ -53,7 +53,7 @@ print('\n-- Running model: {}, {}, {}, 2017-{}, using {}...'.format(run_name,sub
 combined_data = combine_datasheets(list_of_dicts)
 
 # write combined input data files to one Excel for inspection
-write_inputs(combined_data, model_start,subset_of_economies,subset_of_years,run_name)
+#write_inputs(combined_data, model_start,subset_of_economies,subset_of_years,run_name)
 
 # put in dict structure
 data = create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
@@ -69,12 +69,13 @@ model = define_osemosys()
 # ------------------------------------------------------------------------------------------------------------------
 print('\n-- Creating the model instance...')
 instance = model.create_instance(data)
+instance.dual = Suffix(direction=Suffix.IMPORT)
 #instance.write(
 #    '../results/{}_{}_{}_{}.lp'.format(model_start,run_name,subset_of_economies,scenario),
 ##    io_options={'symbolic_solver_labels':True}
 #    )
 
-#with open('../model runs/{}_{}_{}_{}.pkl'.format(model_start,subset_of_economies,scenario,run_name),mode='wb') as file:
+#with open('../results/{}_{}_{}_{}.pkl'.format(model_start,subset_of_economies,scenario,run_name),mode='wb') as file:
 #    cloudpickle.dump(instance,file)
 
 print('\n-- Sending to the solver...')

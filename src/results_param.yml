@@ -80,3 +80,7 @@ UseAnnual:
     indices: [REGION,FUEL,YEAR,VALUE]
     type: var
     dtype: float
+EnergyBalanceEachYear4:
+    indices: [REGION,YEAR,FUEL,VALUE]
+    type: equ
+    dtype: float
