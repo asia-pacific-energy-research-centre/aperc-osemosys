@@ -110,7 +110,7 @@ def create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
                 dict_of_df[key] = ___df
             elif key == 'REGION':
                 ___df = __df[__df['VALUES']==subset_of_economies]
-                #___df = __df[__df['VALUE'].isin(subset_of_economies)]
+                #___df = __df[__df['VALUES'].isin(subset_of_economies)]
                 dict_of_df[key] = ___df
 
     # create the pyomo dict
@@ -127,6 +127,7 @@ def create_data_dict(combined_data,subset_of_years,subset_of_economies,scenario)
 def write_inputs(combined_data, model_start,subset_of_economies,subset_of_years,run_name):
     combined_data_copy = combined_data
     with pd.ExcelWriter('../results/{}_{}_{}_{}_inputs.xlsx'.format(model_start,subset_of_economies,subset_of_years,run_name)) as writer:
+    #with pd.ExcelWriter('../results/{}_{}_{}_inputs.xlsx'.format(model_start,subset_of_years,run_name)) as writer:
         for k, v in combined_data_copy.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None

@@ -27,13 +27,19 @@ a_dict = list_of_dicts[0]
 for key in a_dict.keys():
     list_of_dfs = []
     for _dict in list_of_dicts:
+        print(key)
         _df = _dict[key]
         list_of_dfs.append(_df)
     _dfs = pd.concat(list_of_dfs)
     combined_data[key] = _dfs
 
+# aggregate UseAnnual
+_df = combined_data['UseAnnual']
+a = _df.groupby(['REGION','FUEL']).sum().reset_index()
+combined_data['UseAnnual'] = a
+
 # write results to Excel
-xlsx_file = '../model runs/{}_{}_{}_{}.xlsx'.format(subset_of_economies,scenario,subset_of_years,run_name)
+xlsx_file = '../results/{}_{}_{}_{}.xlsx'.format(subset_of_economies,scenario,subset_of_years,run_name)
 with pd.ExcelWriter(xlsx_file) as writer:
     for k,v in combined_data.items():
         #print(k)

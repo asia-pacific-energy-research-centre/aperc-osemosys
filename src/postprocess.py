@@ -13,6 +13,18 @@ def extract(instance):
             #print ("   ",index, value(v[index]))  # doctest: +SKIP
             var_results[index] = value(v[index]) # or pyo.value
         results_dict[v.name] = var_results
+
+    # extract duals
+    __df = {}
+    print("Collecting dual values for EnergyBalanceEachYear4")
+    for index in instance.EnergyBalanceEachYear4:
+        __df[index] = instance.dual[instance.EnergyBalanceEachYear4[index]]
+    __df = pd.DataFrame.from_dict({'VALUE':__df},orient='columns')
+    __df = __df.reset_index()
+    __df.rename(columns={'level_0':'REGION','level_1':'FUEL','level_2':'YEAR'}, inplace=True)
+    _df = __df[['REGION','YEAR','FUEL','VALUE']]
+    results_dict['EnergyBalanceEachYear4'] = _df
+    
     return results_dict
 
 def make_dfs(results_dict):
@@ -33,6 +45,10 @@ def make_dfs(results_dict):
         #    indices = contents_var[key]['indices']
         #    _df.columns=indices
         #    results_dfs[key] = _df
+        elif contents_var[key]['type'] == 'equ':
+            #print(key)
+            _df = results_dict[key]
+            results_dfs[key] = _df
     _df = results_dfs['ProductionByTechnology']
     _df = _df.drop(['TIMESLICE'],axis=1)
     results_dfs['ProductionByTechnologyAnnual'] = _df
@@ -43,6 +59,7 @@ def pivot_results(results_dfs):
         contents_var = yaml.load(file, Loader=yaml.FullLoader)
     _result_tables = {}
     for key,value in contents_var.items():
+        #print(key)
         indices = contents_var[key]['indices']
         if 'TIMESLICE' in indices:
             #print('This one has TIMESLICE:', key)
@@ -70,11 +87,33 @@ def pivot_results(results_dfs):
                 df = pd.pivot_table(_df,index=_indices,columns='YEAR',values='VALUE')
                 df = df.loc[(df != 0).any(1)] # remove rows if all are zero
                 _result_tables[key] = df
+            elif contents_var[key]['type'] == 'equ':
+                #print(key)
+                unwanted_members = {'YEAR', 'VALUE'}
+                _indices = [ele for ele in indices if ele not in unwanted_members]
+                _df = results_dfs[key]
+                df = pd.pivot_table(_df,index=_indices,columns='YEAR',values='VALUE')
+                #df = df.loc[(df != 0).any(1)] # remove rows if all are zero
+                _result_tables[key] = df
     result_tables = {k: v for k, v in _result_tables.items() if not v.empty}
     return result_tables
 
 def write_results(results_tables, model_start,subset_of_economies,subset_of_years,run_name):
     with pd.ExcelWriter('../results/{}_{}_{}_{}_results.xlsx'.format(model_start,subset_of_economies,subset_of_years,run_name)) as writer:
+    #with pd.ExcelWriter('../results/{}_{}_{}_results.xlsx'.format(model_start,subset_of_years,run_name)) as writer:
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
     return None
+
+#def write_duals(instance,results_dict):
+#    __df = {}
+#    print("Collecting dual values for EnergyBalanceEachYear4")
+#    for index in instance.EnergyBalanceEachYear4:
+#        __df[index] = instance.dual[instance.EnergyBalanceEachYear4[index]]
+#    __df = pd.DataFrame.from_dict({'VALUE':__df},orient='columns')
+#    __df = __df.reset_index()
+#    __df.rename(columns={'level_0':'REGION','level_1':'FUEL','level_2':'YEAR'}, inplace=True)
+#    _df = __df[['REGION','YEAR','FUEL','VALUE']]
+#    results_dict['EnergyBalanceEachYear4'] = _df
+#
+#    return results_dict
