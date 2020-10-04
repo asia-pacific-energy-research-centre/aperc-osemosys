@@ -1,21 +1,10 @@
-data/
-ose-env/
-*.gpr
-*.~gm
-*.lxi
-*.lst
-*.log 
-task*
-*.gdx
 *.xlsx
 *.csv
-*.dat
-*.lp
-*.glpk
-._.DS_Store
-tmp/
-results/
-.vscode/
+*.sol
+*.log
+.vscode/settings.json
+datafile_from_python.txt
+ose-env/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,92 +1,54 @@
-# APERC OSeMOSYS
+# Instructions
 
-## Project organization
+## Step 1. Clone this repository.
 
-Project organization is based on ideas from [_Good Enough Practices for Scientific Computing_](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005510).
+Click the green "Code" button to download this code to your computer. It is recommended to use GitHub Desktop.
 
-1. Put each project in its own directory, which is named after the project.
-2. Put external scripts or compiled programs in the `bin` directory.
-3. Put raw data and metadata in a `data` directory.
-4. Put text documents associated with the project in the `doc` directory.
-5. Put all Docker related files in the `docker` directory.
-6. Install the Conda environment into an `env` directory. 
-7. Put all notebooks in the `notebooks` directory.
-8. Put files generated during cleanup and analysis in a `results` directory.
-9. Put project source code in the `src` directory.
-10. Name all files to reflect their content or function.
+## Step 2. Create the environment with dependencies.
 
-## Getting started
+In your command prompt, navigate to the `aperc-osemosys` folder and enter:
 
-### Creating the Conda environment
+`conda env create --prefix ./ose-env --file ./workflow/envs/ose-env.yml`
 
-The `environment.yml` contains the necessary dependencies. You can create the 
-environment in a sub-directory of your project directory by running the following command:
+## Step 3. Activate the environment.
+`conda activate ./ose-env`
 
-```bash
-conda env create --prefix ./ose-env --file environment.yml
-```
+## Step 4. Add the otoole package.
 
-Once the new environment has been created you can activate the environment with the following 
-command:
+`pip install otoole`
 
-```bash
-conda activate ./ose-env
-```
+## Step 5. Add the data.
+Copy the following data sheets from the Integration folder to `./data/`:
+- data-sheet-agriculture
+- data-sheet-buildings
+- data-sheet-industry
+- data-sheet-nonspecified
+- data-sheet-ownuse
+- data-sheet-pipeline-transport
+- data-sheet-power
+- data-sheet-refining
+- data-sheet-supply
+- data-sheet-transport
+- data-sheet-yyy
 
-Note that the `env` directory is *not* under version control as it can always be re-created from 
-the `environment.yml` file as necessary.
+## Step 6. Configure the model run.
+In your favorite text editor (e.g., Visual Studio Code), modify the following:
+- open `./config/model_config.yml`
+- Change the forecast period. For example: `2020`.
+- Change the economy. For example: `01_AUS`.
 
-#### Updating the Conda environment
+## Step 7. Create the data for OSeMOSYS.
 
-If you add (remove) dependencies to (from) the `environment.yml` file after the environment has 
-already been created, then you can update the environment with the following command.
+`python ./workflow/scripts/process_data.py`
 
-```bash
-conda env update --prefix ./ose-env --file environment.yml --prune
-```
+## Step 8. Solve the model.
 
-#### Listing the full contents of the Conda environment
+`glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
 
-The list of explicit dependencies for the project are listed in the `environment.yml` file. To see the full list of packages installed into the environment run the following command.
+## Step 9. Process the results.
 
-```bash
-conda list --prefix ./ose-env
-```
+`python ./workflow/scripts/process_results.py`
 
-### Installing other packages
-
-This only needs to be performed once. With the `ose-env` environment active, run the following command:
-
-```
-pip install PyYAML
-```
-
-## Running the model
-
-### Add the data
-Place all data in the `data` directory. This directory is *not* under version control.
-
-
-### Configure the model run
-Adjust the run parameters by updating the following fields in the `model_config.yml` file:
-- `ForecastPeriod`: the forecast period. Valid years are between 2017 and 2050.
-- `Economies`: the economy abbreviation.
-- `Scenario`: either "Current" or "Announced".
-- `Solver`: glpk. CBC is also an option but will need to be installed separately.
-- `Name`: choose a descriptive name for your model run.
-- `FilePaths`: comment and uncomment the files you want to run. Note that demand files must be run with the "xxx" file. Power, Refining, and Supply must be run with the "yyy" file.
-
-### Run the model
-5. Navigate to the `src` directory:
-```
-cd src
-```
-
-6. Run the model with the following command: 
-```
-python main.py
-```
-
-## Accessing results
-
-Results are stored in the `results` directory. This directory is *not* under version control.
+Results are saved in `./results/`. The combined results file is named `results.xlsx`. Other files are created:
+- `.csv` files for each result parameter
+- a `.sol` file with the solver solution output.
