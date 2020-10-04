@@ -13,7 +13,7 @@ In your command prompt, navigate to the `aperc-osemosys` folder and enter:
 ## Step 3. Activate the environment.
 `conda activate ./ose-env`
 
-# Step 4. Add the otoole package.
+## Step 4. Add the otoole package.
 
 `pip install otoole`
 
