@@ -56,7 +56,7 @@ Results are saved in `./results/`. The combined results file is named `results.x
 - a `.sol` file with the solver solution output.
 
 # 2. Example
-The following is an example model_config.yml configuration. This run is for Canada for the years 2017-2025 for all sectors excluding bio-refining:
+The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for all sectors excluding bio-refining:
 
 ```yml
 ForecastPeriod: 2025 #2017-2050
