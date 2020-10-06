@@ -12,6 +12,7 @@ FilePaths:
     OWN: './data/data-sheet-ownuse.xlsx'
     PIP: './data/data-sheet-pipeline transport.xlsx'
     NON: './data/data-sheet-nonspecified.xlsx'
+    XXX: './data/data-sheet-xxx.xlsx'
 
 ### Transformation and supply sectors:
     POW: './data/data-sheet-power.xlsx'
