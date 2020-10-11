@@ -1142,5 +1142,31 @@ table ProductionResults
     sum{t in TECHNOLOGY, m in MODEperTECHNOLOGY[t]}
         RateOfActivity[r,l,t,m,y] * OutputActivityRatio[r,t,f,m,y] * YearSplit[l,y]~VALUE;
 
+table ProductionDualByTimeslice
+    {r in REGION, l in TIMESLICE, f in FUEL, y in YEAR:
+        EBa11_EnergyBalanceEachTS5[r,l,f,y].dual}
+    OUT "CSV"
+    ResultsPath & "/ProductionDualByTimeslice.csv" :
+        r~REGION, l~TIMESLICE, f~FUEL, y~YEAR,
+        EBa11_EnergyBalanceEachTS5[r,l,f,y].dual~DUAL,
+        EBa11_EnergyBalanceEachTS5[r,l,f,y].lb~LB,
+        EBa11_EnergyBalanceEachTS5[r,l,f,y].ub~UP,
+        EBa11_EnergyBalanceEachTS5[r,l,f,y].val~VALUE,
+        EBa11_EnergyBalanceEachTS5[r,l,f,y].status~STATUS
+;
+
+table ProductionDualAnnual
+    {r in REGION, f in FUEL, y in YEAR:
+        EBb4_EnergyBalanceEachYear4[r,f,y]}
+    OUT "CSV"
+    ResultsPath & "/ProductionDualAnnual.csv" :
+        r~REGION, f~FUEL, y~YEAR,
+        EBb4_EnergyBalanceEachYear4[r,f,y].dual~DUAL,
+        EBb4_EnergyBalanceEachYear4[r,f,y].lb~LB,
+        EBb4_EnergyBalanceEachYear4[r,f,y].ub~UP,
+        EBb4_EnergyBalanceEachYear4[r,f,y].val~VALUE,
+        EBb4_EnergyBalanceEachYear4[r,f,y].status~STATUS
+;
+
 end;
 
