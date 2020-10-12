@@ -8,7 +8,7 @@ Click the green "Code" button to download this code to your computer. It is reco
 
 In your command prompt, navigate to the `aperc-osemosys` folder and enter:
 
-`conda env create --prefix ./ose-env --file ./workflow/envs/ose-env.yml`
+` conda env create --prefix ./ose-env --file ./environment.yml `
 
 ## Step 3. Activate the environment.
 `conda activate ./ose-env`
