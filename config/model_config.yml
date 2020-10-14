@@ -1,5 +1,5 @@
-ForecastPeriod: 2018 #2017-2050
-Economies: xxx #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
+EndYear: YourYearHere #2050
+Economies: YourEconomyHere #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
 Scenario: Current #Current or Announced
 Solver: glpk # glpk or cbc
 Name: xxx #CombinedPowRefSup 

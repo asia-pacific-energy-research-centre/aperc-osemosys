@@ -21,7 +21,7 @@ def configure_run():
         contents = yaml.load(file, Loader=yaml.FullLoader)
     list_of_dicts = []
     for key,value in contents.items():
-        if key == 'ForecastPeriod':
+        if key == 'EndYear':
             subset_of_years = value
         elif key == 'Economies':
             subset_of_economies = value
