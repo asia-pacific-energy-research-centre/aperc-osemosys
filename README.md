@@ -6,6 +6,9 @@ Click the green "Code" button to download this code to your computer. It is reco
 
 ## Step 2. Create the environment with dependencies.
 
+### Prerequisites
+Miniconda: make sure you have installed Miniconda on your computer. You can download Miniconda [here](https://docs.conda.io/en/latest/miniconda.html). If asked to update your PATH variable, select **YES**.
+
 In your command prompt, navigate to the `aperc-osemosys` folder and enter:
 
 `conda env create --prefix ./ose-env --file ./workflow/envs/ose-env.yml`
