@@ -1,26 +1,33 @@
 # 1. Instructions
 
-## Step 1. Clone this repository.
+## Prepare the code
+### Step 1. Clone this repository.
 
-Click the green "Code" button to download this code to your computer. It is recommended to use GitHub Desktop.
+Click the green "Code" button to download this code to your computer. You have several options:
+- Open in GitHub Desktop (recommended)
+- download Zip
 
-## Step 2. Create the environment with dependencies.
+It is recommended to have a GitHub folder outside of your Documents folder. A good location would be:
+`C:\users\ShinzoAbe\GitHub`
 
-### Prerequisites
+### Step 2. Create the environment with dependencies.
+
+#### Prerequisites
 Miniconda: make sure you have installed Miniconda on your computer. You can download Miniconda [here](https://docs.conda.io/en/latest/miniconda.html). If asked to update your PATH variable, select **YES**.
 
 In your command prompt, navigate to the `aperc-osemosys` folder and enter:
 
 `conda env create --prefix ./ose-env --file ./workflow/envs/ose-env.yml`
 
-## Step 3. Activate the environment.
+### Step 3. Activate the environment.
 `conda activate ./ose-env`
 
-## Step 4. Add the otoole package.
+### Step 4. Add the otoole package.
 
 `pip install otoole`
 
-## Step 5. Add the data.
+## Run the model
+### Step 5. Add the data.
 Copy the following data sheets from the Integration folder to `./data/`:
 - data-sheet-agriculture
 - data-sheet-buildings
@@ -35,7 +42,7 @@ Copy the following data sheets from the Integration folder to `./data/`:
 - data-sheet-xxx
 - data-sheet-yyy
 
-## Step 6. Configure the model run.
+### Step 6. Configure the model run.
 In your favorite text editor (e.g., Visual Studio Code), modify the following:
 - open `./config/model_config.yml`
 - Change the ending year for the projection using `EndYear`. For example: `2025`.
@@ -43,17 +50,17 @@ In your favorite text editor (e.g., Visual Studio Code), modify the following:
 
 See Section 2 below for an example.
 
-## Step 7. Run the demand models.
+### Step 7. Run the demand models.
 
 Create the data for OSeMOSYS by commenting out the "Transformation and supply sectors" in the `model_config.yml` file. Run the following code:
 
 `python ./workflow/scripts/process_data.py`
 
-## Step 8. Solve the demand models.
+### Step 8. Solve the demand models.
 
 `glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
 
-## Step 9. Process the demand results.
+### Step 9. Process the demand results.
 
 `python ./workflow/scripts/process_results.py`
 
@@ -61,16 +68,17 @@ Results are saved in `./results/`. The combined results file is named `results.x
 - `.csv` files for each result parameter
 - a `.sol` file with the solver solution output.
 
-## Step 10. Add demands to the Power/Refining/Supply models.
+### Step 10. Add demands to the Power/Refining/Supply models.
 
 - In the `results.xslx` file `copy` the results from `UseAnnual`. In `data-sheet-yyy.xlsx`, paste the results in the `AccumulatedAnnualDemand` tab.
 - `Cut` the results for `10_electricity_Dx` and paste in the `SpecifiedAnnualDemand` tab.
 
-## Step 11. Run the Power/Refining/Supply models.
+### Step 11. Run the Power/Refining/Supply models.
 
 Follow Steps 7 through 9, but comment out the "Demand sectors" and uncomment "Transformation and supply sectors".
 
 # 2. Example
+## Run demand sector models
 The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the demand sectors :
 
 ```yml
@@ -97,6 +105,7 @@ FilePaths:
     #YYY: './data/data-sheet-yyy.xlsx'
 ```
 
+## Run power, refining, and supply models using demands from above
 The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the Transformation and supply sectors :
 
 ```yml
