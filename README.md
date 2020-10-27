@@ -75,7 +75,7 @@ Results are saved in `./results/`. The combined results file is named `results.x
 
 ### Step 11. Run the Power/Refining/Supply models.
 
-In the model_config.yml file, comment out the Demand sector files and uncomment the data files for power, refining, and supply.
+In the `model_config.yml` file, comment out the Demand sector files and uncomment the data files for power, refining, and supply.
 
 Run the commands in Steps 7, 8, and 9 to produce the full set of results.
 
