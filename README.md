@@ -135,6 +135,8 @@ Results are saved in `./results/`. There are three files:
 Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the results file created above:
 - `results_demands.xslx`
 
+*Note*: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
+
 ## 4. Run the Power, Refining, and Supply Sectors
 ### 4.1. Add the fuel demands to the yyy file
 
@@ -187,6 +189,8 @@ Finally, copy and paste:
 Results are saved in `./results/` in a file called `results.xlsx`. Rename `results.xslx` to `results_supply.xslx` (or a name of your choice as long as it contains the word "results").
 
 ### 4.4. Visualize the results (optional)
-Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the two results files created above:
+Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the results files:
 - `results_demands.xslx`
 - `results_supply.xslx`
+
+*Note*: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
