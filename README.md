@@ -4,14 +4,13 @@
 
 You will need several software programs on your computer:
 
-**Visual Studio Code** – this is a text editor that makes it easy to modify the configuration files (more on this later) https://code.visualstudio.com/
+**Visual Studio Code** – this is a text editor that makes it easy to modify the configuration files (more on this later). [Visual Studio Code](https://code.visualstudio.com/).
 
-**Miniconda** – this is a package manager for Python. We create a specific environment (set of programs and their versions) to run the code. You want the Python 3.8 version. During installation, the installer will ask if you want to add conda to the default PATH variable. Select **YES**. https://docs.conda.io/en/latest/miniconda.html
+**Miniconda** – this is a package manager for Python. We create a specific environment (set of programs and their versions) to run the code. You want the Python 3.8 version. During installation, the installer will ask if you want to add conda to the default PATH variable. Select **YES**. [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
-**GitHub Desktop** – an easy way to grab code from GitHub. You will need to create a free account. https://desktop.github.com/
+**GitHub Desktop** – an easy way to grab code from GitHub. You will need to create a free account. [GitHub Desktop](https://desktop.github.com/)
 
-**Windows Terminal** – *Optional*. A modern command line terminal for Windows. You can use the built in Command Prompt too. 
-https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab
+**Windows Terminal** – *Optional*. A modern command line terminal for Windows. You can use the built in Command Prompt too. [Windows Terminal](https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab).
 
 The following instructions assume you have installed Visual Studio Code, Miniconda, and GitHub Desktop.
 
