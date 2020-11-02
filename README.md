@@ -6,7 +6,7 @@ You will need several software programs on your computer:
 
 **Visual Studio Code** – this is a text editor that makes it easy to modify the configuration files (more on this later) https://code.visualstudio.com/
 
-**Miniconda** – this is a package manager for Python. We create a specific environment (set of programs and their versions) to run the code. You want the Python 3.8 version. During installation, the installer will ask if you want to add conda to the default PATH variable. Select YES. https://docs.conda.io/en/latest/miniconda.html
+**Miniconda** – this is a package manager for Python. We create a specific environment (set of programs and their versions) to run the code. You want the Python 3.8 version. During installation, the installer will ask if you want to add conda to the default PATH variable. Select **YES**. https://docs.conda.io/en/latest/miniconda.html
 
 **GitHub Desktop** – an easy way to grab code from GitHub. You will need to create a free account. https://desktop.github.com/
 
@@ -24,9 +24,9 @@ Once you have installed the software above, you will need to download the mode c
 
 Click “Open with GitHub Desktop”. GitHub Desktop will open. If it is your first time opening the app, you may need to log in with your account.
 
-You will see a dialogue asking you where to save the model files:
+You will see a dialogue asking you where to save the model files.
 
-Where it says “Local path”, choose the “GitHub” folder you created above. Your settings should look similar to the above image. Click “Clone”. When it is finished you can close the app.
+Where it says "Local path", choose the "GitHub folder you created above. Your settings should look similar to the above image. Click "Clone". When it is finished you can close the app.
 
 ### 1.2. Create the Python environment with dependencies.
 
@@ -88,8 +88,7 @@ We can tell the model which economies, sectors, and years to run.
 
 ## 3. Run the demand sectors
 
-Comment out `POW`, `REF`, `SUP`, `YYY`. Your model_config.yml file should look like:
-
+Comment out `POW`, `REF`, `SUP`, `YYY`.
 
 ### 3.1. Run the demand sectors
 Run the following code:
@@ -123,7 +122,7 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 - rename `results.xslx` to `results_demand.xslx`
 
 ### 4.2. Configure the model for Power, Refining, and Supply sectors
-- In the `model_config.yml` file, comment out the Demand sector files and uncomment the data files for power, refining, and supply. Your model_config.yml file should look like:
+- In the `model_config.yml` file, comment out the Demand sector files and uncomment the data files for power, refining, and supply.
 
 ### 4.3. Run the Power, Refining, and Supply sectors
 Run the following code:
@@ -144,7 +143,6 @@ Results are saved in `./results/` in a file called `results.xlsx`. Rename `resul
 Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the two results files created above:
 - `results_demands.xslx`
 - `results_supply.xslx`
-
 
 # EXAMPLES
 ## Run demand sector models
@@ -174,8 +172,8 @@ FilePaths:
     #YYY: './data/data-sheet-yyy.xlsx'
 ```
 
-## Run power, refining, and supply models using demands from above
-The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the Transformation and supply sectors. Be sure to populate the demands in `data-sheet-yyy.xlsx` (see **Step 10** above).
+## Run Power, Refining, and Supply secotrs using demands from above
+The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the Power, Refining, and Supply sectors. Be sure to populate the demands in `data-sheet-yyy.xlsx` (see **Step 10** above).
 
 Configure the `model_config.yml` file to look like this:
 
