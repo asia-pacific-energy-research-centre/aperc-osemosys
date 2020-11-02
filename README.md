@@ -1,35 +1,63 @@
-# 1. Instructions
+# INSTRUCTIONS
 
-## Prepare the code
-### Step 1. Clone this repository.
+## 0. Before you begin
 
-Click the green "Code" button to download this code to your computer. You have several options:
-- Open in GitHub Desktop (recommended)
-- download Zip
+You will need several software programs on your computer:
 
-It is recommended to have a GitHub folder outside of your Documents folder. A good location would be: `C:\Users\ShinzoAbe\GitHub`
+**Visual Studio Code** – this is a text editor that makes it easy to modify the configuration files (more on this later). [Visual Studio Code](https://code.visualstudio.com/).
 
-### Step 2. Create the environment with dependencies.
+**Miniconda** – this is a package manager for Python. We create a specific environment (set of programs and their versions) to run the code. You want the Python 3.8 version. During installation, the installer will ask if you want to add conda to the default PATH variable. Select **YES**. [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
-#### Prerequisites
-Miniconda: make sure you have installed Miniconda on your computer. You can download Miniconda [here](https://docs.conda.io/en/latest/miniconda.html). If asked to update your PATH variable, select **YES**.
+**GitHub Desktop** – an easy way to grab code from GitHub. You will need to create a free account. [GitHub Desktop](https://desktop.github.com/)
 
-In your command prompt, navigate to the `aperc-osemosys` folder and enter:
+**Windows Terminal** – *Optional*. A modern command line terminal for Windows. You can use the built in Command Prompt too. [Windows Terminal](https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab).
+
+The following instructions assume you have installed Visual Studio Code, Miniconda, and GitHub Desktop.
+
+## 1. Getting set up for the first time
+### 1.1. Download the model files
+
+Create a folder called `GitHub` on your computer in your user directory. For example, `C:\Users\ShinzoAbe\GitHub`.
+
+Once you have installed the software above, you will need to download the mode code. Visit https://github.com/asia-pacific-energy-research-centre/aperc-osemosys . Note the README file that is there. To download the code, click the green “↓ Code” button.
+
+Click “Open with GitHub Desktop”. GitHub Desktop will open. If it is your first time opening the app, you may need to log in with your account.
+
+You will see a dialogue asking you where to save the model files.
+
+Where it says "Local path", choose the "GitHub folder you created above. Your settings should look similar to the above image. Click "Clone". When it is finished you can close the app.
+
+### 1.2. Create the Python environment with dependencies.
+
+We will now install all the software that our model requires. In your Command Prompt, navigate to the `aperc-osemosys` folder containing the model files.
+
+Copy and paste the following code:
 
 `conda env create --prefix ./ose-env --file ./workflow/envs/ose-env.yml`
 
-### Step 3. Activate the environment.
-In the command prompt, run:
+Miniconda is now collecting all the programs it needs. This step will take a while.
+
+nnce complete, using the Command Prompt, in your aperc-osemosys directory, copy and paste:
 
 `conda activate ./ose-env`
 
-### Step 4. Add the otoole package.
-In the command prompt, run:
+We need to install one more piece of software that is not available in Miniconda. Copy and paste to your Command Prompt:
 
 `pip install otoole`
 
-## Run the model
-### Step 5. Add the data.
+Once it is complete, we are ready to run the model. You will not need to repeat these steps.
+
+## 2. Run the model
+### 2.1. Activate the environment
+
+From now on, when you want to run the model you must first activate the environment. If you are coming from the steps above, your environment is already active. If not, in the Command Prompt, in your aperc-osemosys directory, copy and paste:
+
+`conda activate ./ose-env`
+
+You are now in the active environment called `ose-env`. You can check your command prompt to confirm that is says `ose-env`.
+
+### 2.2. Add the data files
+
 Copy the following data sheets from the Integration folder to `./data/`:
 - data-sheet-agriculture
 - data-sheet-buildings
@@ -44,52 +72,78 @@ Copy the following data sheets from the Integration folder to `./data/`:
 - data-sheet-xxx
 - data-sheet-yyy
 
-### Step 6. Configure the model run.
-In your favorite text editor (e.g., Visual Studio Code), modify the following:
-- open `./config/model_config.yml`
-- Change the ending year for the projection using `EndYear`. For example: `2025`.
-- Change the economy using `Economies`. For example: `03_CDA`.
+The `xxx` and `yyy` files are very important. `xxx` is required when running the demand sectors separately from supply, refining, and power. The reason is that xxx contains other default parameters, such as the region list, year list, discount rate, etc. `xxx` also contains backstop technologies that produce all the necessary input fuels (e.g., oil, natural gas, electricity etc) that the power, refining, and supply sectors produce.
 
-See **Section 2** below for examples.
+`yyy` contains the same information for running the Power, Refining, and Supply sectors.
 
-### Step 7. Run the demand models.
-Create the data for OSeMOSYS by commenting out the "Transformation and supply sectors" in the `model_config.yml` file. Run the following code:
+### 2.3. Configure years and economy
+
+We can tell the model which economies, sectors, and years to run.
+
+- Open Visual Studio Code. Go to File > "Open Folder...". Select the `aperc-osemosys` folder.
+- Open the file called `model_config.yml`. It is located in `aperc-osemosys\config`.
+- Change the ending year for the projection using `EndYear`. For example: `2050`.
+- Change the economy using `Economies`. For example: `21_VN`.
+
+## 3. Run the demand sectors
+
+Comment out `POW`, `REF`, `SUP`, `YYY`.
+
+### 3.1. Run the demand sectors
+Run the following code:
 
 `python ./workflow/scripts/process_data.py`
 
-### Step 8. Solve the demand models.
-In the command prompt, run:
+When it finishes, copy and paste:
 
 `glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
 
-### Step 9. Process the demand results.
-In the command prompt, run:
+This code runs OSeMOSYS. Finally, copy and paste:
 
 `python ./workflow/scripts/process_results.py`
 
-Results are saved in `./results/`. The combined results file is named `results.xlsx`. Other files are created:
-- `.csv` files for each result parameter
+Results are saved in `./results/`. There are three files:
+- The combined results file is named `results.xlsx`.
+- `.csv` files for each result parameter (these are all in the `results.xlsx` file)
 - a `.sol` file with the solver solution output.
 
-### Step 10. Add demands to the Power/Refining/Supply models.
+### 3.2. Chart the results (optional)
+Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the results file created above:
+- `results_demands.xslx`
+
+## 4. Run the Power, Refining, and Supply Sectors
+### 4.1. Add the fuel demands to the yyy file
+
 - In the `results.xslx` file, `copy` the results from `UseAnnual`. 
 - In `data-sheet-yyy.xlsx`, paste the results in the `AccumulatedAnnualDemand` tab.
 - `Cut` the results for `10_electricity_Dx` and paste in the `SpecifiedAnnualDemand` tab.
 - Delete the empty row in the `AccumulatedAnnualDemand` tab.
 - rename `results.xslx` to `results_demand.xslx`
 
-### Step 11. Run the Power/Refining/Supply models.
+### 4.2. Configure the model for Power, Refining, and Supply sectors
 - In the `model_config.yml` file, comment out the Demand sector files and uncomment the data files for power, refining, and supply.
-- Run the commands in Steps 7, 8, and 9 to produce the full set of results.
 
-## Visualize the results
+### 4.3. Run the Power, Refining, and Supply sectors
+Run the following code:
+
+`python ./workflow/scripts/process_data.py`
+
+When it finishes, copy and paste:
+
+`glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
+
+Finally, copy and paste:
+
+`python ./workflow/scripts/process_results.py`
+
+Results are saved in `./results/` in a file called `results.xlsx`. Rename `results.xslx` to `results_supply.xslx` (or a name of your choice as long as it contains the word "results").
+
+### 4.4. Visualize the results (optional)
 Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the two results files created above:
 - `results_demands.xslx`
-- `results.xslx`
+- `results_supply.xslx`
 
-You can rename the results files, but be sure to keep "results" in the file name.
-
-# 2. Example
+# EXAMPLES
 ## Run demand sector models
 The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the demand sectors :
 
@@ -117,8 +171,8 @@ FilePaths:
     #YYY: './data/data-sheet-yyy.xlsx'
 ```
 
-## Run power, refining, and supply models using demands from above
-The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the Transformation and supply sectors. Be sure to populate the demands in `data-sheet-yyy.xlsx` (see **Step 10** above).
+## Run Power, Refining, and Supply secotrs using demands from above
+The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the Power, Refining, and Supply sectors. Be sure to populate the demands in `data-sheet-yyy.xlsx` (see **Step 10** above).
 
 Configure the `model_config.yml` file to look like this:
 
