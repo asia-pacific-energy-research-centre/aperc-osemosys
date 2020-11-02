@@ -27,10 +27,10 @@ def configure_run():
             subset_of_economies = value
         elif key == 'Scenario':
             scenario = value
-        elif key == 'Solver':
-            solver = value
-        elif key == 'Name':
-            run_name = value
+        #elif key == 'Solver':
+        #    solver = value
+        #elif key == 'Name':
+        #    run_name = value
         elif key == 'FilePaths':
             for k,v in contents['FilePaths'].items():
                 if v is not None:
@@ -83,15 +83,15 @@ def configure_run():
                     #list_of_dicts.append(_dict)
                     list_of_dicts.append(__dict)
                     #list_of_dicts.append(filtered_data)
-    return subset_of_years,subset_of_economies,scenario,list_of_dicts,solver,run_name
+    return subset_of_years,subset_of_economies,scenario,list_of_dicts
 
 configuration = configure_run()
 subset_of_years = configuration[0]
 subset_of_economies = solver = configuration[1]
 scenario = configuration[2]
 list_of_dicts = configuration[3]
-solver = configuration[4]
-run_name = configuration[5]
+#solver = configuration[4]
+#run_name = configuration[5]
 
 def combine_datasheets(list_of_dicts):
     combined_data = {}
@@ -153,15 +153,3 @@ for key,value in contents.items():
 output_file = './data/datafile_from_python.txt'
 
 writer.write(filtered_data2, output_file, default_values)
-
-
-
-## clean up preprocessing
-#
-#with open('../data/preprocessed_data.txt', "r") as f:
-#    lines = f.readlines()
-#with open("../data/preprocessed_data2.txt", "w") as f:
-#    for line in lines:
-#        if ":=;" not in line:
-#            line.strip("\n")
-#            f.write(line)
