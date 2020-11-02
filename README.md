@@ -47,7 +47,7 @@ We need to install one more piece of software that is not available in Miniconda
 
 Once it is complete, we are ready to run the model. You will not need to repeat these steps.
 
-## 2. Run the model
+## 2. Prepare the model
 ### 2.1. Activate the environment
 
 From now on, when you want to run the model you must first activate the environment. If you are coming from the steps above, your environment is already active. If not, in the Command Prompt, in your aperc-osemosys directory, copy and paste:
