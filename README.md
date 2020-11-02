@@ -19,13 +19,13 @@ The following instructions assume you have installed Visual Studio Code, Minicon
 
 Create a folder called `GitHub` on your computer in your user directory. For example, `C:\Users\ShinzoAbe\GitHub`.
 
-Once you have installed the software above, you will need to download the mode code. Visit https://github.com/asia-pacific-energy-research-centre/aperc-osemosys . Note the README file that is there. To download the code, click the green “↓ Code” button.
+Once you have installed the software above, you will need to download the model code. Visit https://github.com/asia-pacific-energy-research-centre/aperc-osemosys . Note the README file that is there. To download the code, click the green “↓ Code” button.
 
 Click “Open with GitHub Desktop”. GitHub Desktop will open. If it is your first time opening the app, you may need to log in with your account.
 
 You will see a dialogue asking you where to save the model files.
 
-Where it says "Local path", choose the "GitHub folder you created above. Your settings should look similar to the above image. Click "Clone". When it is finished you can close the app.
+Where it says "Local path", choose the "GitHub folder you created above. Click "Clone". When it is finished you can close the app.
 
 ### 1.2. Create the Python environment with dependencies.
 
