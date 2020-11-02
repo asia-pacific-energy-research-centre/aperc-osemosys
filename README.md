@@ -93,8 +93,6 @@ Comment out `POW`, `REF`, `SUP`, `YYY` using `#`. Your `model_config.yml` file s
 EndYear: 2050 #2017-2050
 Economies: 21_VN #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
 Scenario: Current #Current or Announced
-Solver: glpk # glpk or cbc
-Name: Canada_test #CombinedPowRefSup 
 FilePaths:
 ### Demand sectors:
     AGR: './data/data-sheet-agriculture.xlsx'
@@ -153,8 +151,6 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 EndYear: 2050 #2017-2050
 Economies: 21_VN #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
 Scenario: Current #Current or Announced
-Solver: glpk # glpk or cbc
-Name: Canada_test #CombinedPowRefSup 
 FilePaths:
 ### Demand sectors:
     #AGR: './data/data-sheet-agriculture.xlsx'
