@@ -29,9 +29,9 @@ Where it says "Local path", choose the "GitHub folder you created above. Your se
 
 ### 1.2. Create the Python environment with dependencies.
 
-We will now install all the software that our model requires. In your Command Prompt, navigate to the `aperc-osemosys` folder containing the model files.
+We will now install all the software that our model requires. In your Command Prompt, navigate to the `aperc-osemosys` folder containing the model files. *Hint*: you can use `cd` to **c**hange **d**irectories. For example, `cd GitHub\aperc-osemosys`.
 
-Copy and paste the following code:
+Once you are in the `aperc-osemosys` directory, copy and paste the following code:
 
 `conda env create --prefix ./ose-env --file ./workflow/envs/ose-env.yml`
 
@@ -87,18 +87,44 @@ We can tell the model which economies, sectors, and years to run.
 
 ## 3. Run the demand sectors
 
-Comment out `POW`, `REF`, `SUP`, `YYY`.
+Comment out `POW`, `REF`, `SUP`, `YYY` using `#`. Your `model_config.yml` file should look like (subsitute your own year and economy):
+
+```yml
+EndYear: 2050 #2017-2050
+Economies: 21_VN #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
+Scenario: Current #Current or Announced
+Solver: glpk # glpk or cbc
+Name: Canada_test #CombinedPowRefSup 
+FilePaths:
+### Demand sectors:
+    AGR: './data/data-sheet-agriculture.xlsx'
+    BLD: './data/data-sheet-buildings.xlsx'
+    IND: './data/data-sheet-industry.xlsx'
+    TRN: './data/data-sheet-transport.xlsx'
+    OWN: './data/data-sheet-ownuse.xlsx'
+    PIP: './data/data-sheet-pipeline transport.xlsx'
+    NON: './data/data-sheet-nonspecified.xlsx'
+    XXX: './data/data-sheet-xxx.xlsx'
+
+### Transformation and supply sectors:
+    #POW: './data/data-sheet-power.xlsx'
+    #REF: './data/data-sheet-refining.xlsx'
+    #SUP: './data/data-sheet-supply.xlsx'
+    #YYY: './data/data-sheet-yyy.xlsx'
+```
+
+*Note*: You do not need to run all demand sectors. You can run with just the sectors you are interested in. ***However, be sure to include XXX.***
 
 ### 3.1. Run the demand sectors
-Run the following code:
+Run the following code to read in the data files:
 
 `python ./workflow/scripts/process_data.py`
 
-When it finishes, copy and paste:
+When it finishes, copy and paste the following command to run the model:
 
 `glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
 
-This code runs OSeMOSYS. Finally, copy and paste:
+Finally, copy and paste the following command to process the results:
 
 `python ./workflow/scripts/process_results.py`
 
@@ -121,64 +147,11 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 - rename `results.xslx` to `results_demand.xslx`
 
 ### 4.2. Configure the model for Power, Refining, and Supply sectors
-- In the `model_config.yml` file, comment out the Demand sector files and uncomment the data files for power, refining, and supply.
-
-### 4.3. Run the Power, Refining, and Supply sectors
-Run the following code:
-
-`python ./workflow/scripts/process_data.py`
-
-When it finishes, copy and paste:
-
-`glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
-
-Finally, copy and paste:
-
-`python ./workflow/scripts/process_results.py`
-
-Results are saved in `./results/` in a file called `results.xlsx`. Rename `results.xslx` to `results_supply.xslx` (or a name of your choice as long as it contains the word "results").
-
-### 4.4. Visualize the results (optional)
-Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the two results files created above:
-- `results_demands.xslx`
-- `results_supply.xslx`
-
-# EXAMPLES
-## Run demand sector models
-The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the demand sectors :
+- In the `model_config.yml` file, comment out the Demand sector files using `#` and uncomment the data files for power, refining, and supply. Your `model_config.yml` file should look like:
 
 ```yml
-EndYear: 2025 #2017-2050
-Economies: 03_CDA #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
-Scenario: Current #Current or Announced
-Solver: glpk # glpk or cbc
-Name: Canada_test #CombinedPowRefSup 
-FilePaths:
-### Demand sectors:
-    AGR: './data/data-sheet-agriculture.xlsx'
-    BLD: './data/data-sheet-buildings.xlsx'
-    IND: './data/data-sheet-industry.xlsx'
-    TRN: './data/data-sheet-transport.xlsx'
-    OWN: './data/data-sheet-ownuse.xlsx'
-    PIP: './data/data-sheet-pipeline transport.xlsx'
-    NON: './data/data-sheet-nonspecified.xlsx'
-    XXX: './data/data-sheet-xxx.xlsx'
-
-### Transformation and supply sectors:
-    #POW: './data/data-sheet-power.xlsx'
-    #REF: './data/data-sheet-refining.xlsx'
-    #SUP: './data/data-sheet-supply.xlsx'
-    #YYY: './data/data-sheet-yyy.xlsx'
-```
-
-## Run Power, Refining, and Supply secotrs using demands from above
-The following is an example `model_config.yml` configuration. This run is for Canada for the years 2017-2025 for the Power, Refining, and Supply sectors. Be sure to populate the demands in `data-sheet-yyy.xlsx` (see **Step 10** above).
-
-Configure the `model_config.yml` file to look like this:
-
-```yml
-EndYear: 2025 #2017-2050
-Economies: 03_CDA #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
+EndYear: 2050 #2017-2050
+Economies: 21_VN #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
 Scenario: Current #Current or Announced
 Solver: glpk # glpk or cbc
 Name: Canada_test #CombinedPowRefSup 
@@ -199,3 +172,25 @@ FilePaths:
     SUP: './data/data-sheet-supply.xlsx'
     YYY: './data/data-sheet-yyy.xlsx'
 ```
+
+*Note*: it is recommended to run Power, Refining, Supply, and YYY together.
+
+### 4.3. Run the Power, Refining, and Supply sectors
+Run the following code:
+
+`python ./workflow/scripts/process_data.py`
+
+When it finishes, copy and paste:
+
+`glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
+
+Finally, copy and paste:
+
+`python ./workflow/scripts/process_results.py`
+
+Results are saved in `./results/` in a file called `results.xlsx`. Rename `results.xslx` to `results_supply.xslx` (or a name of your choice as long as it contains the word "results").
+
+### 4.4. Visualize the results (optional)
+Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the two results files created above:
+- `results_demands.xslx`
+- `results_supply.xslx`
