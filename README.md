@@ -25,7 +25,7 @@ Click “Open with GitHub Desktop”. GitHub Desktop will open. If it is your fi
 
 You will see a dialogue asking you where to save the model files.
 
-Where it says "Local path", choose the "GitHub folder you created above. Your settings should look similar to the above image. Click "Clone". When it is finished you can close the app.
+Where it says "Local path", choose the "GitHub folder you created above. Click "Clone". When it is finished you can close the app.
 
 ### 1.2. Create the Python environment with dependencies.
 
