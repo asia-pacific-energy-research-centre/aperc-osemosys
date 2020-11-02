@@ -91,7 +91,7 @@ Comment out `POW`, `REF`, `SUP`, `YYY` using `#`. Your `model_config.yml` file s
 
 ```yml
 EndYear: 2050 #2017-2050
-Economies: 21_VN #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
+Economies: 21_VN #01_AUS, 02_BD, 03_CDA, 04_CHL, 05_PRC, 06_HKC, 07_INA, 08_JPN, 09_ROK, 10_MAS, 11_MEX, 12_NZ, 13_PNG, 14_PE, 15_RP, 16_RUS, 17_SIN, 18_CT, 19_THA, 20_USA, 21_VN
 Scenario: Current #Current or Announced
 FilePaths:
 ### Demand sectors:
@@ -149,7 +149,7 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 
 ```yml
 EndYear: 2050 #2017-2050
-Economies: 21_VN #['01_AUS','17_SIN','20_USA','03_CDA','05_PRC','16_RUS','10_MAS','07_INA','15_RP','19_THA','21_VN','08_JPN','09_ROK','18_CT','06_HKC',14_PE] # see data sheets for economy abbreviations
+Economies: 21_VN #01_AUS, 02_BD, 03_CDA, 04_CHL, 05_PRC, 06_HKC, 07_INA, 08_JPN, 09_ROK, 10_MAS, 11_MEX, 12_NZ, 13_PNG, 14_PE, 15_RP, 16_RUS, 17_SIN, 18_CT, 19_THA, 20_USA, 21_VN
 Scenario: Current #Current or Announced
 FilePaths:
 ### Demand sectors:
