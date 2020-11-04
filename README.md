@@ -208,7 +208,7 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 The results file produced by running `python ./workflow/scripts/process_results.py` in Steps **3.1** and **4.3** contains many useful parameters. Below is a description of each of the results. Please refer to the [OSeMOSYS Documention](https://osemosys.readthedocs.io/en/latest/manual/Structure%20of%20OSeMOSYS.html#variables) for a full description of the parameters and model variables.
 
 #### AccumulatedNewCapacity
-This is a running sum of all new capacity additions. It is cumulative each year. It is not the total capacity annual, which is capture in the ***TotalCapacityAnnual** result (see below).
+This is a running sum of all new capacity additions. It is cumulative each year. It is not the total capacity annual, which is capture in the **TotalCapacityAnnual** result (see below).
 
 #### CapitalInvestment
 This is the investment in new capacity in 2017 USD million. It is the product of Capital Cost and capacity investment (**NewCapacity**).
