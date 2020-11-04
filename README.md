@@ -47,7 +47,7 @@ We need to install one more piece of software that is not available in Miniconda
 
 `pip install otoole`
 
-Once it is complete, we are ready to run the model. You will not need to repeat these steps.
+Once it is complete, we are ready to run the model. ***You will not need to repeat these steps.***
 
 ## 2. Prepare the model
 ### 2.1. Activate the environment
