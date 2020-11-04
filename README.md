@@ -19,6 +19,8 @@ The following instructions assume you have installed Visual Studio Code, Minicon
 
 Create a folder called `GitHub` on your computer in your user directory. For example, `C:\Users\ShinzoAbe\GitHub`.
 
+*Note*: it is recommended to create the `GitHub` folder in the location above and **not** in OneDrive.
+
 Once you have installed the software above, you will need to download the model code. Visit https://github.com/asia-pacific-energy-research-centre/aperc-osemosys . Note the README file that is there. To download the code, click the green “↓ Code” button.
 
 Click “Open with GitHub Desktop”. GitHub Desktop will open. If it is your first time opening the app, you may need to log in with your account.
@@ -72,9 +74,12 @@ Copy the following data sheets from the Integration folder to `./data/`:
 - data-sheet-xxx
 - data-sheet-yyy
 
+#### The XXX and YYY files
 The `xxx` and `yyy` files are very important. `xxx` is required when running the demand sectors separately from supply, refining, and power. The reason is that xxx contains other default parameters, such as the region list, year list, discount rate, etc. `xxx` also contains backstop technologies that produce all the necessary input fuels (e.g., oil, natural gas, electricity etc) that the power, refining, and supply sectors produce.
 
 `yyy` contains the same information for running the Power, Refining, and Supply sectors.
+
+*Note*: do not use both `XXX` and `YYY` at the same time.
 
 ### 2.3. Configure years and economy
 
@@ -112,6 +117,8 @@ FilePaths:
 ```
 
 *Note*: You do not need to run all demand sectors. You can run with just the sectors you are interested in. ***However, be sure to include XXX.***
+
+*Note*: do not use both `XXX` and `YYY` at the same time.
 
 ### 3.1. Run the demand sectors
 Run the following code to read in the data files:
@@ -173,6 +180,8 @@ FilePaths:
 
 *Note*: it is recommended to run Power, Refining, Supply, and YYY together.
 
+*Note*: do not use both `XXX` and `YYY` at the same time.
+
 ### 4.3. Run the Power, Refining, and Supply sectors
 Run the following code:
 
@@ -194,3 +203,36 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 - `results_supply.xslx`
 
 *Note*: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
+
+## 5. Understanding the results file
+The results file produced by running `python ./workflow/scripts/process_results.py` in Steps **3.1** and **4.3** contains many useful parameters. Below is a description of each of the results. Please refer to the [OSeMOSYS Documention](https://osemosys.readthedocs.io/en/latest/manual/Structure%20of%20OSeMOSYS.html#variables) for a full description of the parameters and model variables.
+
+#### AccumulatedNewCapacity
+This is a running sum of all new capacity additions. It is cumulative each year. It is not the total capacity annual, which is capture in the ***TotalCapacityAnnual** result (see below).
+
+#### CapitalInvestment
+This is the investment in new capacity in 2017 USD million. It is the product of Capital Cost and capacity investment (**NewCapacity**).
+
+#### NewCapacity
+Amount of installed capacity for a technology in each year. It is not cumulative. The product of **NewCapacity** and the Capital Cost is the **CapitalInvstment**.
+
+#### Production
+Production of a fuel in a TIMESLICE. It is the *output* activity of a technology. For a breakdown of fuel production by technology see **ProductionByTechnology**.
+
+#### ProductionByTechnology
+Production of a fuel by a technology in a TIMESLICE. It is the *output* activity of a technology. This result is used to create the TPES results.
+
+#### ProductionByTechnologyAnnual
+Annual production of a fuel by technology and TIMESLICE.
+
+#### TotalCapacityAnnual
+The total installed capacity in each year. It is the sum of Residual Capacity and **NewCapacity**.
+
+#### TotalTechnologyAnnualActivity
+The annual activity (operation) of a technology. This is useful for checking which technologies are operational. Technologies with zero activity for all years are omitted.
+
+#### UseByTechnology
+Consumption (use) of a fuel by a technology in a TIMESLICE. It is the *input* activity of a technology. This result is used to create the FED results.
+
+#### UseAnnual
+Annual consumption (use) of a fuel.
