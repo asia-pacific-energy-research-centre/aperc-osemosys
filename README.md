@@ -1,4 +1,26 @@
 # INSTRUCTIONS
+This README contains the following sections:
+
+### Table of Contents
+
+#### 0. Before you begin
+#### 1. Getting set up for the first time
+#### 2. Prepare the model
+#### 3. Run the demand sectors
+#### 4. Run the Power, Refining, and Supply Sectors
+#### 5. Understanding the results file
+#### 6. Updating the model code
+
+### Quick start guide
+For experienced user:
+
+`conda activate ./ose-env`
+
+`python ./workflow/scripts/process_data.py`
+
+`glpsol -d ./data/datafile_from_python.txt -m ./workflow/model/osemosys-fast.txt -o ./results/solution.sol`
+
+`python ./workflow/scripts/process_results.py`
 
 ## 0. Before you begin
 
@@ -236,3 +258,6 @@ Consumption (use) of a fuel by a technology in a TIMESLICE. It is the *input* ac
 
 #### UseAnnual
 Annual consumption (use) of a fuel.
+
+## 6. Updating the model code
+The model code will be updated periodically. Thus, it is recommended to use GitHub to keep the files in sync. In GitHub Desktop, click `Pull origin` to automatically sync your computer with GitHub.
