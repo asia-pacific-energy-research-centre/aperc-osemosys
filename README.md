@@ -3,16 +3,16 @@ This README contains the following sections:
 
 ### Table of Contents
 
-#### 0. Before you begin
-#### 1. Getting set up for the first time
-#### 2. Prepare the model
-#### 3. Run the demand sectors
-#### 4. Run the Power, Refining, and Supply Sectors
-#### 5. Understanding the results file
-#### 6. Updating the model code
+0. Before you begin
+1. Getting set up for the first time
+2. Prepare the model
+3. Run the demand sectors
+4. Run the Power, Refining, and Supply Sectors
+5. Understanding the results file
+6. Updating the model code
 
 ### Quick start guide
-For experienced user:
+For experienced users:
 
 `conda activate ./ose-env`
 
@@ -260,4 +260,4 @@ Consumption (use) of a fuel by a technology in a TIMESLICE. It is the *input* ac
 Annual consumption (use) of a fuel.
 
 ## 6. Updating the model code
-The model code will be updated periodically. Thus, it is recommended to use GitHub to keep the files in sync. In GitHub Desktop, click `Pull origin` to automatically sync your computer with GitHub.
+The model code will be updated periodically. Thus, it is recommended to use GitHub Desktop to keep the files in sync. In GitHub Desktop, click `Pull origin` to automatically sync your computer with GitHub.
