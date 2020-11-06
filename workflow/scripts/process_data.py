@@ -23,7 +23,7 @@ def configure_run():
     for key,value in contents.items():
         if key == 'EndYear':
             subset_of_years = value
-        elif key == 'Economies':
+        elif key == 'Economy':
             subset_of_economies = value
         elif key == 'Scenario':
             scenario = value

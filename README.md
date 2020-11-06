@@ -119,9 +119,19 @@ We can tell the model which economies, sectors, and years to run.
 Comment out `POW`, `REF`, `SUP`, `YYY` using `#`. Your `model_config.yml` file should look like (subsitute your own year and one economy):
 
 ```yml
-EndYear: 2050 #2017-2050
-Economies: 21_VN #01_AUS, 02_BD, 03_CDA, 04_CHL, 05_PRC, 06_HKC, 07_INA, 08_JPN, 09_ROK, 10_MAS, 11_MEX, 12_NZ, 13_PNG, 14_PE, 15_RP, 16_RUS, 17_SIN, 18_CT, 19_THA, 20_USA, 21_VN
+# Enter a single year below:
+EndYear: 2050 #2050
+
+# Enter a single economy using a name from the list:
+# 01_AUS, 02_BD, 03_CDA, 04_CHL, 05_PRC, 06_HKC, 07_INA,
+# 08_JPN, 09_ROK, 10_MAS, 11_MEX, 12_NZ, 13_PNG, 14_PE, 
+# 15_RP, 16_RUS, 17_SIN, 18_CT, 19_THA, 20_USA, 21_VN
+Economy: 21_VN
+
+# Choose the scenario:
 Scenario: Current #Current or Announced
+
+# Choose the sectors you want to run:
 FilePaths:
 ### Demand sectors:
     AGR: './data/data-sheet-agriculture.xlsx'
@@ -131,13 +141,13 @@ FilePaths:
     OWN: './data/data-sheet-ownuse.xlsx'
     PIP: './data/data-sheet-pipeline transport.xlsx'
     NON: './data/data-sheet-nonspecified.xlsx'
-    XXX: './data/data-sheet-xxx.xlsx'
+    XXX: './data/data-sheet-xxx.xlsx' # this must be included with any demand sector(s). Do not include if running the sectors below.
 
 ### Transformation and supply sectors:
     #POW: './data/data-sheet-power.xlsx'
     #REF: './data/data-sheet-refining.xlsx'
     #SUP: './data/data-sheet-supply.xlsx'
-    #YYY: './data/data-sheet-yyy.xlsx'
+    #YYY: './data/data-sheet-yyy.xlsx' # this must be included when running POW, REF, SUP
 ```
 
 ***Note***: You do not need to run all demand sectors. You can run with just the sectors you are interested in. ***However, be sure to include XXX.***
@@ -181,9 +191,19 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 - In the `model_config.yml` file, comment out the Demand sector files using `#` and uncomment the data files for power, refining, and supply. Your `model_config.yml` file should look like:
 
 ```yml
-EndYear: 2050 #2017-2050
-Economies: 21_VN #01_AUS, 02_BD, 03_CDA, 04_CHL, 05_PRC, 06_HKC, 07_INA, 08_JPN, 09_ROK, 10_MAS, 11_MEX, 12_NZ, 13_PNG, 14_PE, 15_RP, 16_RUS, 17_SIN, 18_CT, 19_THA, 20_USA, 21_VN
+# Enter a single year below:
+EndYear: 2050 #2050
+
+# Enter a single economy using a name from the list:
+# 01_AUS, 02_BD, 03_CDA, 04_CHL, 05_PRC, 06_HKC, 07_INA,
+# 08_JPN, 09_ROK, 10_MAS, 11_MEX, 12_NZ, 13_PNG, 14_PE, 
+# 15_RP, 16_RUS, 17_SIN, 18_CT, 19_THA, 20_USA, 21_VN
+Economy: 21_VN
+
+# Choose the scenario:
 Scenario: Current #Current or Announced
+
+# Choose the sectors you want to run:
 FilePaths:
 ### Demand sectors:
     #AGR: './data/data-sheet-agriculture.xlsx'
@@ -193,18 +213,18 @@ FilePaths:
     #OWN: './data/data-sheet-ownuse.xlsx'
     #PIP: './data/data-sheet-pipeline transport.xlsx'
     #NON: './data/data-sheet-nonspecified.xlsx'
-    #XXX: './data/data-sheet-xxx.xlsx'
+    #XXX: './data/data-sheet-xxx.xlsx' # this must be included with any demand sector(s). Do not include if running the sectors below.
 
 ### Transformation and supply sectors:
     POW: './data/data-sheet-power.xlsx'
     REF: './data/data-sheet-refining.xlsx'
     SUP: './data/data-sheet-supply.xlsx'
-    YYY: './data/data-sheet-yyy.xlsx'
+    YYY: './data/data-sheet-yyy.xlsx' # this must be included when running POW, REF, SUP
 ```
 
 ***Note***: it is recommended to run Power, Refining, Supply, and YYY together.
 
-***Note***: do not use both `XXX` and `YYY` at the same time.
+***Note***: do not use `XXX` and `YYY` at the same time.
 
 ### 4.3. Run the Power, Refining, and Supply sectors
 Run the following code:
