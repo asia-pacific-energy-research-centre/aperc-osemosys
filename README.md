@@ -41,7 +41,7 @@ The following instructions assume you have installed Visual Studio Code, Minicon
 
 Create a folder called `GitHub` on your computer in your user directory. For example, `C:\Users\ShinzoAbe\GitHub`.
 
-*Note*: it is recommended to create the `GitHub` folder in the location above and **not** in OneDrive.
+***Note***: it is recommended to create the `GitHub` folder in the location above and **not** in OneDrive.
 
 Once you have installed the software above, you will need to download the model code. Visit https://github.com/asia-pacific-energy-research-centre/aperc-osemosys . Note the README file that is there. To download the code, click the green “↓ Code” button.
 
@@ -69,7 +69,7 @@ We need to install one more piece of software that is not available in Miniconda
 
 `pip install otoole`
 
-Once it is complete, we are ready to run the model. ***You will not need to repeat these steps.***
+Once it is complete, we are ready to run the model. ***You do not need to repeat these steps.***
 
 ## 2. Prepare the model
 ### 2.1. Activate the environment
@@ -101,7 +101,7 @@ The `xxx` and `yyy` files are very important. `xxx` is required when running the
 
 `yyy` contains the same information for running the Power, Refining, and Supply sectors.
 
-*Note*: do not use both `XXX` and `YYY` at the same time.
+***Note***: do not use both `XXX` and `YYY` at the same time.
 
 ### 2.3. Configure years and economy
 
@@ -112,9 +112,11 @@ We can tell the model which economies, sectors, and years to run.
 - Change the ending year for the projection using `EndYear`. For example: `2050`.
 - Change the economy using `Economies`. For example: `21_VN`.
 
+***Note***: Only one economy can be run at a time.
+
 ## 3. Run the demand sectors
 
-Comment out `POW`, `REF`, `SUP`, `YYY` using `#`. Your `model_config.yml` file should look like (subsitute your own year and economy):
+Comment out `POW`, `REF`, `SUP`, `YYY` using `#`. Your `model_config.yml` file should look like (subsitute your own year and one economy):
 
 ```yml
 EndYear: 2050 #2017-2050
@@ -138,9 +140,9 @@ FilePaths:
     #YYY: './data/data-sheet-yyy.xlsx'
 ```
 
-*Note*: You do not need to run all demand sectors. You can run with just the sectors you are interested in. ***However, be sure to include XXX.***
+***Note***: You do not need to run all demand sectors. You can run with just the sectors you are interested in. ***However, be sure to include XXX.***
 
-*Note*: do not use both `XXX` and `YYY` at the same time.
+***Note***: do not use both `XXX` and `YYY` at the same time.
 
 ### 3.1. Run the demand sectors
 Run the following code to read in the data files:
@@ -164,7 +166,7 @@ Results are saved in `./results/`. There are three files:
 Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the results file created above:
 - `results_demands.xslx`
 
-*Note*: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
+***Note***: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
 
 ## 4. Run the Power, Refining, and Supply Sectors
 ### 4.1. Add the fuel demands to the yyy file
@@ -200,9 +202,9 @@ FilePaths:
     YYY: './data/data-sheet-yyy.xlsx'
 ```
 
-*Note*: it is recommended to run Power, Refining, Supply, and YYY together.
+***Note***: it is recommended to run Power, Refining, Supply, and YYY together.
 
-*Note*: do not use both `XXX` and `YYY` at the same time.
+***Note***: do not use both `XXX` and `YYY` at the same time.
 
 ### 4.3. Run the Power, Refining, and Supply sectors
 Run the following code:
@@ -224,7 +226,7 @@ Follow the instructions using the [8th_outlook_visualisations](https://github.co
 - `results_demands.xslx`
 - `results_supply.xslx`
 
-*Note*: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
+***Note***: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
 
 ## 5. Understanding the results file
 The results file produced by running `python ./workflow/scripts/process_results.py` in Steps **3.1** and **4.3** contains many useful parameters. Below is a description of each of the results. Please refer to the [OSeMOSYS Documention](https://osemosys.readthedocs.io/en/latest/manual/Structure%20of%20OSeMOSYS.html#variables) for a full description of the parameters and model variables.
