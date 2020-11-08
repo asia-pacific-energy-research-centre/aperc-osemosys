@@ -65,9 +65,9 @@ nnce complete, using the Command Prompt, in your aperc-osemosys directory, copy 
 
 `conda activate ./ose-env`
 
-We need to install one more piece of software that is not available in Miniconda. Copy and paste to your Command Prompt:
+We need to install two more pieces of software that is not available in Miniconda. Copy and paste to your Command Prompt:
 
-`pip install otoole`
+`pip install -r ./workflow/envs/requirements.txt`
 
 Once it is complete, we are ready to run the model. ***You do not need to repeat these steps.***
 
