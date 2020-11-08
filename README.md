@@ -32,7 +32,7 @@ You will need several software programs on your computer:
 
 [GitHub Desktop](https://desktop.github.com/) – an easy way to grab code from GitHub. You will need to create a free account.
 
-[Windows Terminal](https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab) – *Optional*. A modern command line terminal for Windows. You can use the built in Command Prompt too.
+[Windows Terminal](https://www.microsoft.com/en-us/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab) – *Recommended*. A modern command line terminal for Windows. You can use the built in Command Prompt too.
 
 The following instructions assume you have installed Visual Studio Code, Miniconda, and GitHub Desktop.
 
@@ -172,20 +172,16 @@ Results are saved in `./results/`. There are three files:
 - `.csv` files for each result parameter (these are all in the `results.xlsx` file)
 - a `.sol` file with the solver solution output.
 
-### 3.2. Chart the results (optional)
-Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the results file created above:
-- `results_demands.xslx`
-
-***Note***: You can open another Command Prompt to perform the charting commands (i.e., you do not need to close the `ose-env` environment.)
-
 ## 4. Run the Power, Refining, and Supply Sectors
 ### 4.1. Add the fuel demands to the yyy file
 
-- In the `results.xslx` file, `copy` the results from `UseAnnual`. 
+- In the `results.xslx` file, `copy` the results from `UseAnnual`. Do not copy the header row.
 - In `data-sheet-yyy.xlsx`, paste the results in the `AccumulatedAnnualDemand` tab.
-- `Cut` the results for `10_electricity_Dx` and paste in the `SpecifiedAnnualDemand` tab.
+- Shift the cells with numbers _right_ two columns so the "Notes" and "Units" columns are empty.
+- `Cut` the results for `10_electricity_Dx` and paste in the `SpecifiedAnnualDemand` tab. Ensure that the "Units" and "Notes" columns do not have numbers.
 - Delete the empty row in the `AccumulatedAnnualDemand` tab.
-- rename `results.xslx` to `results_demand.xslx`
+- Save the file.
+- Rename `results.xslx` to `results_demand.xslx`. ***Note***: "results" must be lowercase.
 
 ### 4.2. Configure the model for Power, Refining, and Supply sectors
 - In the `model_config.yml` file, comment out the Demand sector files using `#` and uncomment the data files for power, refining, and supply. Your `model_config.yml` file should look like:
@@ -239,7 +235,7 @@ Finally, copy and paste:
 
 `python ./workflow/scripts/process_results.py`
 
-Results are saved in `./results/` in a file called `results.xlsx`. Rename `results.xslx` to `results_supply.xslx` (or a name of your choice as long as it contains the word "results").
+Results are saved in `./results/` in a file called `results.xlsx`. Rename `results.xslx` to `results_supply.xslx` (or a name of your choice as long as it contains the word "results").  ***Note***: "results" must be lowercase.
 
 ### 4.4. Visualize the results (optional)
 Follow the instructions using the [8th_outlook_visualisations](https://github.com/asia-pacific-energy-research-centre/8th_outlook_visualisations) repository to visualize the results. You will need the results files:
