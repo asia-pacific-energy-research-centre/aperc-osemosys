@@ -23,10 +23,10 @@ CapitalInvestment:
     indices: [REGION,TECHNOLOGY,YEAR,VALUE]
     type: var
     dtype: float
-Demand:
-    indices: [REGION,TIMESLICE,FUEL,YEAR,VALUE]
-    type: var
-    dtype: float
+#Demand: # TURNED OFF
+#    indices: [REGION,TIMESLICE,FUEL,YEAR,VALUE]
+#    type: var
+#    dtype: float
 #DiscountedCapitalInvestment: #not in fast?
 #    indices: [REGION,TECHNOLOGY,YEAR,VALUE]
 #    type: var
@@ -43,10 +43,10 @@ NewCapacity:
 #    indices: [REGION,TIMESLICE,TECHNOLOGY,FUEL,YEAR,VALUE]
 #    type: var
 #    dtype: float
-Production: # added to fast?
-    indices: [REGION,TIMESLICE,FUEL,YEAR,VALUE]
-    type: var
-    dtype: float
+#Production: # added to fast? # TURNED OFF
+#    indices: [REGION,TIMESLICE,FUEL,YEAR,VALUE]
+#    type: var
+#    dtype: float
 ProductionByTechnology:
     indices: [REGION,TIMESLICE,TECHNOLOGY,FUEL,YEAR,VALUE]
     type: var
