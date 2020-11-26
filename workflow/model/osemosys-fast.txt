@@ -201,7 +201,7 @@ printf "Checking for negative numbers in InputActivityRatio \n";
 check{r in REGION, t in TECHNOLOGY, f in FUEL, m in MODE_OF_OPERATION, y in YEAR} InputActivityRatio[r,t,f,m,y] >=0;
 #
 #####   'Positive numbers only for OutputActivityRatio   #####
-printf "Checking for negative numbers in InputActivityRatio \n";
+printf "Checking for negative numbers in OutputActivityRatio \n";
 check{r in REGION, t in TECHNOLOGY, f in FUEL, m in MODE_OF_OPERATION, y in YEAR} OutputActivityRatio[r,t,f,m,y] >=0;
 
 ##########                       Fuel->Technology Connections         #############
