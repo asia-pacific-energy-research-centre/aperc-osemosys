@@ -191,8 +191,18 @@ check{y in YEAR}: sum{l in TIMESLICE} YearSplit[l,y] <= 1.0001;
 printf "Checking Model period activity bounds for r in REGION, t in TECHNOLOGY \n";
 #
 check{r in REGION, t in TECHNOLOGY: TotalTechnologyModelPeriodActivityLowerLimit[r,t]<>0}:TotalTechnologyModelPeriodActivityLowerLimit[r,t] >= sum{y in YEAR: TotalTechnologyAnnualActivityLowerLimit[r,t,y] <>0}TotalTechnologyAnnualActivityLowerLimit[r,t,y];
-
 #
+#####   'Positive numbers only for AccumulatedAnnualDemand   #####
+printf "Checking for negative numbers in AccumulatedAnnualDemand \n";
+check{r in REGION, f in FUEL, y in YEAR} AccumulatedAnnualDemand[r,f,y] >=0;
+#
+#####   'Positive numbers only for InputActivityRatio   #####
+printf "Checking for negative numbers in InputActivityRatio \n";
+check{r in REGION, t in TECHNOLOGY, f in FUEL, m in MODE_OF_OPERATION, y in YEAR} InputActivityRatio[r,t,f,m,y] >=0;
+#
+#####   'Positive numbers only for OutputActivityRatio   #####
+printf "Checking for negative numbers in InputActivityRatio \n";
+check{r in REGION, t in TECHNOLOGY, f in FUEL, m in MODE_OF_OPERATION, y in YEAR} OutputActivityRatio[r,t,f,m,y] >=0;
 
 ##########                       Fuel->Technology Connections         #############
 set MODExTECHNOLOGYperFUELout{f in FUEL} within MODE_OF_OPERATION cross TECHNOLOGY
