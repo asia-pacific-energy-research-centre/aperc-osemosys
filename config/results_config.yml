@@ -7,18 +7,14 @@ AccumulatedNewCapacity:
     indices: [REGION,TECHNOLOGY,YEAR,VALUE]
     type: var
     dtype: float
-#AnnualEmissions: #remove until emissions are ready
-#    indices: [REGION,EMISSION,YEAR,VALUE]
-#    type: var
-#    dtype: float
-#AnnualTechnologyEmission: #remove until emissions are ready
-#    indices: [REGION,TECHNOLOGY,EMISSION,YEAR,VALUE]
-#    type: var
-#    dtype: float
-#AnnualTechnologyEmissionByFuel: # not needed?
-#    indices: [REGION,FUEL,EMISSION,YEAR,VALUE]
-#    type: var
-#    dtype: float
+AnnualEmissions:
+    indices: [REGION,EMISSION,YEAR,VALUE]
+    type: var
+    dtype: float
+AnnualTechnologyEmission:
+    indices: [REGION,TECHNOLOGY,EMISSION,YEAR,VALUE]
+    type: var
+    dtype: float
 CapitalInvestment:
     indices: [REGION,TECHNOLOGY,YEAR,VALUE]
     type: var
