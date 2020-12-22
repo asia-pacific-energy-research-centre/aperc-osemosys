@@ -19,11 +19,11 @@ The easiest way to install the dependencies is to use miniconda.
 ## Installation
 Install _aperc_osemosys_ using pip:
 
-    pip install apercem
+    pip install aperc-osemosys
 
 To upgrade _aperc_osemosys_ using pip:
 
-    pip install aperc_osemosys upgrade
+    pip install aperc-osemosys upgrade
 
 ## Documentation
 
