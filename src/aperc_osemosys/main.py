@@ -260,6 +260,14 @@ def solve_model(solve_state,solver):
 
     Currently only GLPK solver is supported.
     """
+    path = "./results/tmp/"
+    try:
+        os.mkdir(path)
+    except OSError:
+        #print ("Creation of the directory %s failed" % path)
+        pass
+    else:
+        print ("Successfully created the directory %s " % path)
     if solve_state == True:
         subprocess.run("glpsol -d data/datafile_from_python.txt -m src/aperc_osemosys/osemosys-fast.txt",shell=True)
         #sn(snakefile='./snakefile',targets=['all'],cores=4,quiet=True)
