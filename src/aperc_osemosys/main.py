@@ -15,23 +15,24 @@ def hello():
 
 @hello.command()
 def clean():
-    """Delete files created during the running of the model. Data sheets are not deleted.
+    """Delete temporary files created during the running of the model. Data sheets are not deleted.
 
-    Warning: results files will be deleted!!!
+    Warning: temporary data results files will be deleted!!!
     """
     #sn(snakefile='./snakefile',targets=['clean'],cores=4,quiet=True)
+    print('\n-- Deleting temporary data and results.\n')
     subprocess.run("rm -f results/tmp/*.csv results/*.xlsx results/tmp/*.sol results/*.log data/*.lp data/datafile_from_python.txt data/combined_inputs.xlsx *.done",shell=True)
 
 @hello.command()
 @click.option('--economy','-e',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
-    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC']),prompt=True)
-@click.option('--sector','-s',type=click.Choice(['demand','supply']),prompt=True,help="Choose 'demand' for all demand sectors.\n Choose 'supply' for hydrogen, power, refining, and supply sectors.")
-@click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP']),multiple=True,help="Ignore a sector(s). It is possible to ignore multiple sectors by repeating the option.")
+    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),prompt=True)
+@click.option('--sector','-s',type=click.Choice(['demand','supply'],case_sensitive=False),prompt=True,help="Choose 'demand' for all demand sectors.\n Choose 'supply' for hydrogen, power, refining, and supply sectors.")
+@click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP'],case_sensitive=False),multiple=True,help="Ignore a sector(s). It is possible to ignore multiple sectors by repeating the option.")
 @click.option('--years','-y',type=click.IntRange(2017,2050),prompt=True,help="Enter a number between 2017 and 2050")
-@click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced','Climate']),help="Enter your scenario")
-@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK']),help="Choose a solver.")
+@click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced','Climate'],case_sensitive=False),help="Enter your scenario")
+@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
 def solve(economy,sector,years,scenario,ignore,solver):
     """Solve the model and generate a results file.
 
@@ -59,17 +60,19 @@ def solve(economy,sector,years,scenario,ignore,solver):
 @click.option('--economy','-e',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
-    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC']),prompt=True)
-@click.option('--sector','-s',type=click.Choice(['demand','supply']),prompt=True,help="Choose 'demand' for all demand sectors.\n Choose 'supply' for hydrogen, power, refining, and supply sectors.")
-@click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP']),multiple=True,help="Ignore a sector(s).")
+    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),prompt=True)
+@click.option('--sector','-s',type=click.Choice(['demand','supply'],case_sensitive=False),prompt=True,help="Choose 'demand' for all demand sectors.\n Choose 'supply' for hydrogen, power, refining, and supply sectors.")
+@click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP'],case_sensitive=False),multiple=True,help="Ignore a sector(s).")
 @click.option('--years','-y',type=click.IntRange(2017,2050),prompt=True,help="Type a number between 2017 and 2050")
-@click.option('--scenario',default="Current",type=click.Choice(['Current']),help="Enter your scenario")
+@click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced','Climate'],case_sensitive=False),help="Enter your scenario")
 def validate(economy,sector,years,scenario,ignore):
     """
     Validate data for a sector. This step builds the model file but does not solve the model.
     """
     solver=None
     solve_state = False
+    print('\n-- validating data')
+    print('\n   model will stop after validation and will not solve.\n')
     config_dict = create_config_dict(economy,sector,years,scenario,ignore)
     keep_list = load_data_config()
     list_of_dicts = load_and_filter(keep_list,config_dict)
@@ -93,7 +96,7 @@ def create_config_dict(economy,sector,years,scenario,ignore):
         #else:
         #    config_dict['sector'] = [s for s in demand_sectors]
     elif sector == 'supply':
-        config_dict['sector'] = [s for s in supply_sectors]
+        config_dict['sector'] = [s for s in supply_sectors if s not in ignore]
     #print(config_dict['sector'])
     config_dict['economy'] = economy
     config_dict['years'] = years
@@ -266,7 +269,7 @@ def solve_model(solve_state,solver):
 
 def combine_results(economy):
     """
-    Combine model solution and write as Excel file.
+    Combine model solution and write as the result as an Excel file.
     """
     parent_directory = "./results/"
     child_directory = economy
@@ -274,7 +277,8 @@ def combine_results(economy):
     try:
         os.mkdir(path)
     except OSError:
-        print ("Creation of the directory %s failed" % path)
+        #print ("Creation of the directory %s failed" % path)
+        pass
     else:
         print ("Successfully created the directory %s " % path)
 
@@ -336,6 +340,3 @@ def write_results(results_tables,economy,sector,model_start):
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
     return None
-
-#if __name__ == '__main__':
-#    hello()

@@ -38,8 +38,9 @@ To contribute directly to the documentation of code development, you first need 
     git checkout <branch you wish to use>
     python setup.py develop
 
-
 ## Note
+
+This project makes use of the OSeMOSYS model, which can be obtained [here](https://github.com/OSeMOSYS).
 
 This project has been set up using PyScaffold 3.2.3. For details and usage
 information on PyScaffold see https://pyscaffold.org/.
