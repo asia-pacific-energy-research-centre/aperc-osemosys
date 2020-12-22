@@ -48,6 +48,7 @@ MANIFEST
 
 # Per-project virtualenvs
 .venv*/
+env/
 ose-env/
 .vscode
 *.xlsx

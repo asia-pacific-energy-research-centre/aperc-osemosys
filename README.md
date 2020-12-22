@@ -2,28 +2,15 @@
 
 The APERC Toolkit for Energy Analysis and Modeling.
 
+## Description
+This is the package development repository. 
+
+Are you looking to run the model? Head over to [this repository](https://github.com/asia-pacific-energy-research-centre/Outlook) and follow the instructions.
 
 ## Dependencies
-aperc_osemosys requires a number of dependencies, including pygraphviz, which can be difficult to install on Windows.
+_aperc-osemosys_ requires a number of dependencies. To install, copy and paste the following in your command line:
 
-The easiest way to install the dependencies is to use miniconda.
-
-1. Obtain the miniconda package
-2. Add the **conda-forge** channel `conda config --add channels conda-forge`
-3. Create a new Python environment
-
-    `conda create -n myenv python=3.7 networkx datapackage graphviz xlrd glpk coincbc`
-
-4. Use pip to install _aperc_osemosys_ `pip install apercem`
-
-## Installation
-Install _aperc_osemosys_ using pip:
-
-    pip install aperc-osemosys
-
-To upgrade _aperc_osemosys_ using pip:
-
-    pip install aperc-osemosys upgrade
+`conda create --prefix ./env python=3.7 networkx datapackage graphviz xlrd glpk`
 
 ## Documentation
 
@@ -31,7 +18,7 @@ Coming soon...
 
 ## Contributing
 
-To contribute directly to the documentation of code development, you first need to install the package in *develop mode*:
+To contribute directly to the code development, you first need to install the package in *develop mode*:
 
     git clone http://github.com/OSeMOSYS/aperc-osemosys
     cd aperc-osemosys
