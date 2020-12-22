@@ -1,4 +1,0 @@
-tol_dual = 1e-5
-tol_primal = 1e-5
-reslim = 5000
-startalg = primal
