@@ -8,7 +8,7 @@ This is the package development repository.
 ## Dependencies
 _aperc-osemosys_ requires a number of dependencies. To install, copy and paste the following in your command line:
 
-`conda create --prefix ./env python=3.7 networkx datapackage graphviz xlrd glpk`
+`conda create --prefix ./env python=3.7 pandas numpy networkx datapackage graphviz xlrd glpk`
 
 ## Contributing
 

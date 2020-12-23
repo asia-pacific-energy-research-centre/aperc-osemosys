@@ -63,7 +63,7 @@ def solve(economy,sector,years,scenario,ignore,solver):
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),prompt=True)
 @click.option('--sector','-s',type=click.Choice(['demand','supply'],case_sensitive=False),prompt=True,help="Choose 'demand' for all demand sectors.\n Choose 'supply' for hydrogen, power, refining, and supply sectors.")
 @click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP'],case_sensitive=False),multiple=True,help="Ignore a sector(s).")
-@click.option('--years','-y',type=click.IntRange(2017,2050),prompt=True,help="Type a number between 2017 and 2050")
+@click.option('--years','-y',type=click.IntRange(2017,2050),default=2050,help="Type a number between 2017 and 2050")
 @click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced','Climate'],case_sensitive=False),help="Enter your scenario")
 def validate(economy,sector,years,scenario,ignore):
     """
