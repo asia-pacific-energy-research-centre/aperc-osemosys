@@ -5,16 +5,10 @@ The APERC Toolkit for Energy Analysis and Modeling.
 ## Description
 This is the package development repository. 
 
-Are you looking to run the model? Head over to [this repository](https://github.com/asia-pacific-energy-research-centre/Outlook) and follow the instructions.
-
 ## Dependencies
 _aperc-osemosys_ requires a number of dependencies. To install, copy and paste the following in your command line:
 
 `conda create --prefix ./env python=3.7 networkx datapackage graphviz xlrd glpk`
-
-## Documentation
-
-Coming soon...
 
 ## Contributing
 
