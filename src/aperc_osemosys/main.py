@@ -29,7 +29,7 @@ def clean():
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),prompt=True)
 @click.option('--sector','-s',type=click.Choice(['demand','supply'],case_sensitive=False),prompt=True,help="Choose 'demand' for all demand sectors.\n Choose 'supply' for hydrogen, power, refining, and supply sectors.")
-@click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP'],case_sensitive=False),multiple=True,help="Ignore a sector(s). It is possible to ignore multiple sectors by repeating the option.")
+@click.option('--ignore','-i',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEM'],case_sensitive=False),multiple=True,help="Ignore a sector(s). It is possible to ignore multiple sectors by repeating the option.")
 @click.option('--years','-y',type=click.IntRange(2017,2050),prompt=True,help="Enter a number between 2017 and 2050")
 @click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced','Climate'],case_sensitive=False),help="Enter your scenario")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
@@ -86,7 +86,7 @@ def create_config_dict(economy,sector,years,scenario,ignore):
     Create dictionary `config_dict` containing specifications for model run.
     """
     demand_sectors = ['AGR','BLD','IND','NON','OWN','PIP','TRN','XXX']
-    supply_sectors = ['HYD','POW','REF','SUP','YYY']
+    supply_sectors = ['DEM','HYD','POW','REF','SUP','YYY']
     config_dict = {}
     if sector == 'demand':
         config_dict['sector'] = [s for s in demand_sectors if s not in ignore]
