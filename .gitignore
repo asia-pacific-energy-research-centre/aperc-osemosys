@@ -54,3 +54,4 @@ ose-env/
 *.xlsx
 *.csv
 datafile_from_python.txt
+model.txt

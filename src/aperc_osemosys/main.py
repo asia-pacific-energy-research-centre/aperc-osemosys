@@ -8,6 +8,7 @@ from otoole.write_strategies import WriteDatafile
 import click
 import subprocess
 import time
+import importlib.resources as resources
 
 @click.group()
 def hello():
@@ -19,9 +20,8 @@ def clean():
 
     Warning: temporary data results files will be deleted!!!
     """
-    #sn(snakefile='./snakefile',targets=['clean'],cores=4,quiet=True)
-    print('\n-- Deleting temporary data and results.\n')
-    subprocess.run("rm -f results/tmp/*.csv results/*.xlsx results/tmp/*.sol results/*.log data/*.lp data/datafile_from_python.txt data/combined_inputs.xlsx *.done",shell=True)
+    print('\n-- Deleting temporary data and results...\n')
+    subprocess.run("rm -f results/tmp/*.csv results/*.xlsx results/tmp/*.sol results/*.log data/*.lp data/datafile_from_python.txt data/model.txt data/combined_inputs.xlsx *.done",shell=True)
 
 @hello.command()
 @click.option('--economy','-e',type=click.Choice(
@@ -54,7 +54,7 @@ def solve(economy,sector,years,scenario,ignore,solver):
     write_results(results_tables,economy,sector,model_start)
 
     toc = time.time()
-    print('\n-- The model ran for {:.2f} seconds.'.format(toc-tic))
+    print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
 
 @hello.command()
 @click.option('--economy','-e',type=click.Choice(
@@ -89,15 +89,9 @@ def create_config_dict(economy,sector,years,scenario,ignore):
     supply_sectors = ['HYD','POW','REF','SUP','YYY']
     config_dict = {}
     if sector == 'demand':
-        #print(ignore)
         config_dict['sector'] = [s for s in demand_sectors if s not in ignore]
-        #if ignore is not None:
-        #    config_dict['sector'] = [s for s in demand_sectors if s is not ignore]
-        #else:
-        #    config_dict['sector'] = [s for s in demand_sectors]
     elif sector == 'supply':
         config_dict['sector'] = [s for s in supply_sectors if s not in ignore]
-    #print(config_dict['sector'])
     config_dict['economy'] = economy
     config_dict['years'] = years
     config_dict['scenario'] = scenario
@@ -107,10 +101,11 @@ def load_data_config():
     """
     Load the model config file with filepaths.
     """
-    print('\n-- Reading in data configuration...')
+    print('\n-- Reading in data configuration...\n')
 
-    with open('./src/aperc_osemosys/data_config.yml') as file:
-        data_config = yaml.load(file, Loader=yaml.FullLoader)
+    with resources.open_text('aperc_osemosys','data_config.yml') as open_file:
+        data_config = yaml.load(open_file, Loader=yaml.FullLoader)
+
     keep_dict={}
     for key,value in data_config.items():
         new_dict = data_config[key]
@@ -121,7 +116,7 @@ def load_data_config():
 
     keep_list = [x if y == 'None' else y for x,y in keep_dict.items()]
 
-    print('    ...successfully read in data configuration')
+    print('    ...successfully read in data configuration\n')
     return keep_list
 
 def load_and_filter(keep_list,config_dict):
@@ -132,8 +127,9 @@ def load_and_filter(keep_list,config_dict):
     """
     subset_of_economies = config_dict['economy']
     scenario = config_dict['scenario']
-    with open('./src/aperc_osemosys/model_config.yml') as file:
-        contents = yaml.load(file, Loader=yaml.FullLoader)
+    with resources.open_text('aperc_osemosys','model_config.yml') as open_file:
+        contents = yaml.load(open_file, Loader=yaml.FullLoader)
+
     list_of_dicts = []
     for key,value in contents.items():
         if key in config_dict['sector']:
@@ -225,8 +221,8 @@ def use_otoole(config_dict):
     data, default_values = reader.read(_path)
     
     # edit data (the dict of dataframes)
-    with open('./src/aperc_osemosys/data_config.yml') as file:
-        contents = yaml.load(file, Loader=yaml.FullLoader)
+    with resources.open_text('aperc_osemosys','data_config.yml') as open_file:
+        contents = yaml.load(open_file, Loader=yaml.FullLoader)
     
     filtered_data2 = {}
     for key,value in contents.items():
@@ -268,17 +264,22 @@ def solve_model(solve_state,solver):
         pass
     else:
         print ("Successfully created the directory %s " % path)
+    
     if solve_state == True:
-        subprocess.run("glpsol -d data/datafile_from_python.txt -m src/aperc_osemosys/osemosys-fast.txt",shell=True)
-        #sn(snakefile='./snakefile',targets=['all'],cores=4,quiet=True)
+        model_text = resources.read_text('aperc_osemosys','osemosys-fast.txt')
+        f = open('data/model.txt','w')
+        f.write('%s\n'% model_text)
+        f.close()
+        subprocess.run("glpsol -d data/datafile_from_python.txt -m data/model.txt",shell=True)
     else:
-        subprocess.run("glpsol -d data/datafile_from_python.txt -m src/aperc_osemosys/osemosys-fast.txt --check",shell=True)
+        subprocess.run("glpsol -d data/datafile_from_python.txt -m data/model.txt --check",shell=True)
     return None
 
 def combine_results(economy):
     """
     Combine model solution and write as the result as an Excel file.
     """
+    print('\n-- Preparing results...')
     parent_directory = "./results/"
     child_directory = economy
     path = os.path.join(parent_directory,child_directory)
@@ -290,8 +291,9 @@ def combine_results(economy):
     else:
         print ("Successfully created the directory %s " % path)
 
-    with open('./src/aperc_osemosys/results_config.yml') as file:
-        contents_var = yaml.load(file, Loader=yaml.FullLoader)
+    with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
+        contents_var = yaml.load(open_file, Loader=yaml.FullLoader)
+
         results_dfs={}
     for key,value in contents_var.items():
         if contents_var[key]['type'] == 'var':
@@ -299,8 +301,8 @@ def combine_results(economy):
             #print(fpath)
             _df = pd.read_csv(fpath).reset_index(drop=True)
             results_dfs[key] = _df
-    with open('./src/aperc_osemosys/results_config.yml') as file:
-        contents_var = yaml.load(file, Loader=yaml.FullLoader)
+    with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
+        contents = yaml.load(open_file, Loader=yaml.FullLoader)
     _result_tables = {}
     for key,value in contents_var.items():        
         #print(key)
@@ -347,4 +349,5 @@ def write_results(results_tables,economy,sector,model_start):
     with pd.ExcelWriter('./results/{}/{}_{}_{}.xlsx'.format(economy,economy,sector,model_start)) as writer:
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
+    print('\n-- Results are available in the folder /results/{}'.format(economy))
     return None
