@@ -51,7 +51,7 @@ def solve(economy,sector,years,scenario,ignore,solver):
     use_otoole(config_dict)
     solve_model(solve_state,solver)
     results_tables = combine_results(economy)
-    write_results(results_tables,economy,sector,model_start)
+    write_results(results_tables,economy,sector,scenario,model_start)
 
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
@@ -266,7 +266,7 @@ def solve_model(solve_state,solver):
         print ("Successfully created the directory %s " % path)
     
     if solve_state == True:
-        model_text = resources.read_text('aperc_osemosys','osemosys-fast.txt')
+        model_text = resources.read_text('aperc_osemosys','osemosys-fast_1_0.txt')
         f = open('data/model.txt','w')
         f.write('%s\n'% model_text)
         f.close()
@@ -345,8 +345,9 @@ def combine_results(economy):
     result_tables = {k: v for k, v in _result_tables.items() if not v.empty}
     return result_tables
 
-def write_results(results_tables,economy,sector,model_start):
-    with pd.ExcelWriter('./results/{}/{}_{}_{}.xlsx'.format(economy,economy,sector,model_start)) as writer:
+def write_results(results_tables,economy,sector,scenario,model_start):
+    scenario = scenario.lower()
+    with pd.ExcelWriter('./results/{}/{}_{}_{}_results_{}.xlsx'.format(economy,economy,scenario,sector,model_start)) as writer:
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
     print('\n-- Results are available in the folder /results/{}'.format(economy))
