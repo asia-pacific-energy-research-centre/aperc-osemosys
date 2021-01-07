@@ -266,7 +266,7 @@ def solve_model(solve_state,solver):
         print ("Successfully created the directory %s " % path)
     
     if solve_state == True:
-        model_text = resources.read_text('aperc_osemosys','osemosys-fast.txt')
+        model_text = resources.read_text('aperc_osemosys','osemosys-fast_1_0.txt')
         f = open('data/model.txt','w')
         f.write('%s\n'% model_text)
         f.close()

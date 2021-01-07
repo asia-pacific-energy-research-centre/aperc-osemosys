@@ -54,7 +54,7 @@ set STORAGE;
 #
 ########                        Global                                                 #############
 #
-param ResultsPath, symbolic default 'results';
+param ResultsPath, symbolic default 'results/tmp';
 param YearSplit{l in TIMESLICE, y in YEAR};
 param DiscountRate{r in REGION, t in TECHNOLOGY};
 
