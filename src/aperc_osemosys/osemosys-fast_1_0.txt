@@ -54,7 +54,7 @@ set STORAGE;
 #
 ########                        Global                                                 #############
 #
-param ResultsPath, symbolic default 'results/tmp';
+param ResultsPath, symbolic default 'tmp';
 param YearSplit{l in TIMESLICE, y in YEAR};
 param DiscountRate{r in REGION, t in TECHNOLOGY};
 
@@ -297,7 +297,7 @@ var UseAnnual{r in REGION, f in FUEL, y in YEAR}>= 0;
 var VariableOperatingCost{r in REGION, t in TECHNOLOGY, l in TIMESLICE, y in YEAR}>= 0;
 var SalvageValue{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 var DiscountedSalvageValue{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
-var OperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR};
+var OperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #var DiscountedOperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #var AnnualVariableOperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
 #var AnnualFixedOperatingCost{r in REGION, t in TECHNOLOGY, y in YEAR}>= 0;
