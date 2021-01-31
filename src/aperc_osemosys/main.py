@@ -28,11 +28,11 @@ def clean():
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN'],case_sensitive=False),prompt=True)
-@click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP'],case_sensitive=False),
+@click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,prompt=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
-@click.option('--years','-y',type=click.IntRange(2017,2050),prompt=True,help="Enter a number between 2017 and 2050")
+@click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
 @click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced'],case_sensitive=False),help="Enter your scenario")
-@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK','CBC'],case_sensitive=False),help="Choose a solver.")
+@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
 def solve(economy,sector,years,scenario,solver):
     """Solve the model and generate a results file.
 
@@ -61,7 +61,10 @@ def create_config_dict(economy,sector,years,scenario):
     Create dictionary `config_dict` containing specifications for model run.
     """
     config_dict = {}
-    _sector = [s for s in sector]
+    if sector[0]=="DEMANDS" or sector=="demands":
+        _sector = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    else:
+        _sector = [s for s in sector]
     _sector.append('YYY')
     config_dict['sector'] = _sector
     config_dict['economy'] = economy
@@ -249,7 +252,7 @@ def solve_model(solve_state,solver):
             subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt --wlp tmp/model.lp --check",shell=True)
             subprocess.run("cbc tmp/model.lp solve -solu tmp/results.sol",shell=True)
     else:
-        subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt --check",shell=True)
+        subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt --wlp tmp/model.lp --check",shell=True)
     return None
 
 def combine_results(economy):
