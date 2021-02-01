@@ -5,8 +5,6 @@ NON: './data/data-sheet-nonspecified.xlsx'
 OWN: './data/data-sheet-ownuse.xlsx'
 PIP: './data/data-sheet-pipeline transport.xlsx'
 TRN: './data/data-sheet-transport.xlsx'
-XXX: './data/data-sheet-xxx.xlsx'
-#
 DEM: './data/my-demands.xlsx'
 HYD: './data/data-sheet-hydrogen.xlsx'
 POW: './data/data-sheet-power.xlsx'

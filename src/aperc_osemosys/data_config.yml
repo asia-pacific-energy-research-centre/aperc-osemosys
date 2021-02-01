@@ -97,7 +97,7 @@ DepreciationMethod:
     default: 1
     short: None
 DiscountRate:
-    indices: [REGION]
+    indices: [REGION,TECHNOLOGY]
     type: param
     dtype: float
     default: 0.05
