@@ -330,22 +330,30 @@ def write_results(results_tables,economy,sector,scenario,model_start):
     return None
 
 @hello.command()
-@click.argument('filepath')
-def combine(filepath):
+@click.argument('input')
+@click.option('--output','-o',default='results',prompt=False)
+def combine(input,output):
     """
     Combine results files.
 
-    'filepath' is a required argument. Filepath is relative to the top level directory.
+    'input' is a required argument. 'input' is relative to the top level directory.
+
+    'output' is optional. 'output' is the directory for the combined results file.
     """
-    files = glob.glob(os.path.join(filepath,"*.xlsx"))
+    try:
+        os.mkdir(output)
+    except OSError:
+        pass
+    else:
+        print ("Successfully created the directory %s " % output)
+    model_start = time.strftime("%Y-%m-%d-%H%M%S")
+    files = glob.glob(os.path.join(input,"*.xlsx"))
     list_of_dicts = []
     for f in files:
         _dict = pd.read_excel(f,sheet_name=None)
         list_of_dicts.append(_dict)
-
     with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
         contents_var = yaml.load(open_file, Loader=yaml.FullLoader)
-
     combined_data = {}
     a_dict = list_of_dicts[0]
     for key in a_dict.keys(): #AccumulatedNewCapacity, CapitalInvestment, etc
@@ -358,8 +366,8 @@ def combine(filepath):
             list_of_dfs.append(_df)
         _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
         combined_data[key] = _dfs
-
-    with pd.ExcelWriter('./tmp/combined_results.xlsx') as writer:
+    _path = os.path.join(output,'combined_results_{}.xlsx').format(model_start)
+    with pd.ExcelWriter(_path) as writer:
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
