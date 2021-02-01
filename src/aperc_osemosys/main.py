@@ -9,6 +9,7 @@ import click
 import subprocess
 import time
 import importlib.resources as resources
+import glob
 
 @click.group()
 def hello():
@@ -323,4 +324,39 @@ def write_results(results_tables,economy,sector,scenario,model_start):
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
     print('\n-- Results are available in the folder /results/{}'.format(economy))
+    return None
+
+@hello.command()
+@click.argument('filepath')
+def combine(filepath):
+    """
+    Combine results files.
+
+    'filepath' is a required argument. Filepath is relative to the top level directory.
+    """
+    files = glob.glob(os.path.join(filepath,"*.xlsx"))
+    list_of_dicts = []
+    for f in files:
+        _dict = pd.read_excel(f,sheet_name=None)
+        list_of_dicts.append(_dict)
+
+    with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
+        contents_var = yaml.load(open_file, Loader=yaml.FullLoader)
+
+    combined_data = {}
+    a_dict = list_of_dicts[0]
+    for key in a_dict.keys(): #AccumulatedNewCapacity, CapitalInvestment, etc
+        indices = contents_var[key]['indices']
+        unwanted_members = {'YEAR', 'VALUE'}
+        _indices = [ele for ele in indices if ele not in unwanted_members]
+        list_of_dfs = []
+        for _dict in list_of_dicts: #AccumulatedNewCapacity, AccumulatedNewCapacity, CapitalInvestment, CapitalInvestment, etc, etc
+            _df = _dict[key]
+            list_of_dfs.append(_df)
+        _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
+        combined_data[key] = _dfs
+    
+    with pd.ExcelWriter('./tmp/combined_results.xlsx') as writer:
+        for k, v in combined_data.items():
+            v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
