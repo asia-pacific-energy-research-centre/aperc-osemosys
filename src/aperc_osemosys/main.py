@@ -32,10 +32,11 @@ def clean():
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,prompt=True,help="Type the acronym of the economy you want to solve. Multiple economies can be solved by repeating the command. Use 'APEC' to solve all economies.")
 @click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,prompt=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
+@click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
 @click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced'],case_sensitive=False),help="Enter your scenario")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
-def solve(economy,sector,years,scenario,solver):
+def solve(economy,sector,years,scenario,solver,mydemands):
     """Solve the model and generate a results file.
 
     Results are available in results/[economy]/results.xlsx.
@@ -45,7 +46,7 @@ def solve(economy,sector,years,scenario,solver):
     print('\n-- Model started at {}.'.format(model_start))
 
     solve_state = True
-    config_dict = create_config_dict(economy,sector,years,scenario)
+    config_dict = create_config_dict(economy,sector,years,scenario,mydemands)
     keep_list = load_data_config()
     for e in config_dict['economy']:
         economy = e
@@ -60,7 +61,7 @@ def solve(economy,sector,years,scenario,solver):
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
 
-def create_config_dict(economy,sector,years,scenario):
+def create_config_dict(economy,sector,years,scenario,mydemands):
     """
     Create dictionary `config_dict` containing specifications for model run.
     """
@@ -70,6 +71,8 @@ def create_config_dict(economy,sector,years,scenario):
     else:
         _sector = [s for s in sector]
     _sector.append('YYY')
+    if mydemands:
+        _sector.append('DEM')
     config_dict['sector'] = _sector
     if economy[0]=='APEC' or economy[0]=='apec':
         _economy = ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA','08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE','15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN']
