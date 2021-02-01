@@ -167,6 +167,13 @@ def combine_datasheets(list_of_dicts):
 
     Combined datasheet will be written to Excel then processed by otoole.
     """
+    try:
+        os.mkdir('./tmp')
+    except OSError:
+        #print ("Creation of the directory %s failed" % path)
+        pass
+    else:
+        print ("Successfully created the directory %s " % 'tmp')
     combined_data = {}
     a_dict = list_of_dicts[0]
     for key in a_dict.keys():
