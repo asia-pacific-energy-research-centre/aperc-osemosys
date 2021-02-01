@@ -28,7 +28,7 @@ def clean():
 @click.option('--economy','-e',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
-    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN'],case_sensitive=False),prompt=True)
+    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,prompt=True,help="Type the acronym of the economy you want to solve. Multiple economies can be solved by repeating the command. Use 'APEC' to solve all economies.")
 @click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,prompt=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
@@ -46,13 +46,15 @@ def solve(economy,sector,years,scenario,solver):
     solve_state = True
     config_dict = create_config_dict(economy,sector,years,scenario)
     keep_list = load_data_config()
-    list_of_dicts = load_and_filter(keep_list,config_dict)
-    combined_data = combine_datasheets(list_of_dicts)
-    write_inputs(combined_data)
-    use_otoole(config_dict)
-    solve_model(solve_state,solver)
-    results_tables = combine_results(economy)
-    write_results(results_tables,economy,sector,scenario,model_start)
+    for e in config_dict['economy']:
+        economy = e
+        list_of_dicts = load_and_filter(keep_list,config_dict,economy)
+        combined_data = combine_datasheets(list_of_dicts)
+        write_inputs(combined_data)
+        use_otoole(config_dict)
+        solve_model(solve_state,solver)
+        results_tables = combine_results(economy)
+        write_results(results_tables,economy,sector,scenario,model_start)
     #
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
@@ -62,13 +64,17 @@ def create_config_dict(economy,sector,years,scenario):
     Create dictionary `config_dict` containing specifications for model run.
     """
     config_dict = {}
-    if sector[0]=="DEMANDS" or sector=="demands":
+    if sector[0]=="DEMANDS" or sector[0]=="demands":
         _sector = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
     else:
         _sector = [s for s in sector]
     _sector.append('YYY')
     config_dict['sector'] = _sector
-    config_dict['economy'] = economy
+    if economy[0]=='APEC' or economy[0]=='apec':
+        _economy = ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA','08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE','15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN']
+    else:
+        _economy = [e for e in economy]
+    config_dict['economy'] = _economy
     config_dict['years'] = years
     config_dict['scenario'] = scenario
     return config_dict
@@ -78,10 +84,8 @@ def load_data_config():
     Load the model config file with filepaths.
     """
     print('\n-- Reading in data configuration...\n')
-
     with resources.open_text('aperc_osemosys','data_config.yml') as open_file:
         data_config = yaml.load(open_file, Loader=yaml.FullLoader)
-
     keep_dict={}
     for key,value in data_config.items():
         new_dict = data_config[key]
@@ -89,23 +93,20 @@ def load_data_config():
             if k == 'short':
                _name = v
                keep_dict[key] = _name
-
     keep_list = [x if y == 'None' else y for x,y in keep_dict.items()]
-
     print('    ...successfully read in data configuration\n')
     return keep_list
 
-def load_and_filter(keep_list,config_dict):
+def load_and_filter(keep_list,config_dict,economy):
     """
     Load data sets according to specified sectors.
 
     Filters data based on scenario, years, and economies.
     """
-    subset_of_economies = config_dict['economy']
+    subset_of_economies = economy
     scenario = config_dict['scenario']
     with resources.open_text('aperc_osemosys','model_config.yml') as open_file:
         contents = yaml.load(open_file, Loader=yaml.FullLoader)
-
     list_of_dicts = []
     for key,value in contents.items():
         if key in config_dict['sector']:
@@ -188,7 +189,6 @@ def use_otoole(config_dict):
     Use otoole to create OSeMOSYS data package.
     """
     subset_of_years = config_dict['years']
-
     # prepare using otoole
     _path='./tmp/combined_data.xlsx'
     reader = ReadExcel()
@@ -240,7 +240,6 @@ def solve_model(solve_state,solver):
         pass
     else:
         print ("Successfully created the directory %s " % path)
-    
     if solve_state == True:
         model_text = resources.read_text('aperc_osemosys','osemosys-fast_1_0.txt')
         f = open('tmp/model.txt','w')
@@ -323,7 +322,7 @@ def write_results(results_tables,economy,sector,scenario,model_start):
     with pd.ExcelWriter('./results/{}/{}_results_{}_{}_{}.xlsx'.format(economy,economy,_sector,scenario,model_start)) as writer:
         for k, v in results_tables.items():
             v.to_excel(writer, sheet_name=k, merge_cells=False)
-    print('\n-- Results are available in the folder /results/{}'.format(economy))
+    print('\n-- Results are available in the folder /results/{} \n'.format(economy))
     return None
 
 @hello.command()
@@ -355,7 +354,7 @@ def combine(filepath):
             list_of_dfs.append(_df)
         _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
         combined_data[key] = _dfs
-    
+
     with pd.ExcelWriter('./tmp/combined_results.xlsx') as writer:
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
