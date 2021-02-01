@@ -10,6 +10,7 @@ import subprocess
 import time
 import importlib.resources as resources
 import glob
+import shutil
 
 @click.group()
 def hello():
@@ -359,3 +360,22 @@ def combine(filepath):
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
+
+@hello.command()
+@click.argument('path_from')
+@click.argument('path_to')
+def move(path_from,path_to):
+    """
+    Moves files from subdirectories from PATH_FROM to PATH_TO.
+    """
+    try:
+        os.mkdir(path_to)
+    except OSError:
+        pass
+    else:
+        print ("Successfully created the directory %s " % path_to)
+    for root, dirs, files in os.walk(path_from):
+        for file in files:
+          path_file = os.path.join(root,file)
+          if root != path_to:
+            shutil.copy2(path_file,path_to)
