@@ -66,11 +66,16 @@ def create_config_dict(economy,sector,years,scenario,mydemands):
     Create dictionary `config_dict` containing specifications for model run.
     """
     config_dict = {}
+    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
     if sector[0]=="DEMANDS" or sector[0]=="demands":
-        _sector = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+        _sector = demand_sectors
     else:
         _sector = [s for s in sector]
-    _sector.append('YYY')
+    print(_sector)
+    if any(s in _sector for s in demand_sectors):
+        _sector.append('XXX')
+    else:
+        _sector.append('YYY')
     if mydemands:
         _sector.append('DEM')
     config_dict['sector'] = _sector
