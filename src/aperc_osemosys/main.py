@@ -30,13 +30,17 @@ def clean():
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,prompt=True,help="Type the acronym of the economy you want to solve. Multiple economies can be solved by repeating the command. Use 'APEC' to solve all economies.")
+@click.option('--ignore','-i',type=click.Choice(
+    ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
+    '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
+    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN'],case_sensitive=False),multiple=True,help="Ignore an economy. This is useful if a sector has no data for an economy. Example: no agriculture in Hong Kong, China.")
 @click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,prompt=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
 @click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
 @click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced'],case_sensitive=False),help="Enter your scenario")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
-def solve(economy,sector,years,scenario,solver,mydemands):
+def solve(economy,ignore,sector,years,scenario,solver,mydemands):
     """Solve the model and generate a results file.
 
     Results are available in results/[economy]/results.xlsx.
@@ -46,7 +50,7 @@ def solve(economy,sector,years,scenario,solver,mydemands):
     print('\n-- Model started at {}.'.format(model_start))
 
     solve_state = True
-    config_dict = create_config_dict(economy,sector,years,scenario,mydemands)
+    config_dict = create_config_dict(economy,ignore,sector,years,scenario,mydemands)
     keep_list = load_data_config()
     for e in config_dict['economy']:
         economy = e
@@ -55,13 +59,13 @@ def solve(economy,sector,years,scenario,solver,mydemands):
         write_inputs(combined_data)
         use_otoole(config_dict)
         solve_model(solve_state,solver)
-        results_tables = combine_results(economy)
+        results_tables = process_results(economy)
         write_results(results_tables,economy,sector,scenario,model_start)
     #
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
 
-def create_config_dict(economy,sector,years,scenario,mydemands):
+def create_config_dict(economy,ignore,sector,years,scenario,mydemands):
     """
     Create dictionary `config_dict` containing specifications for model run.
     """
@@ -83,7 +87,8 @@ def create_config_dict(economy,sector,years,scenario,mydemands):
         _economy = ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA','08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE','15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN']
     else:
         _economy = [e for e in economy]
-    config_dict['economy'] = _economy
+    __economy = [e for e in _economy if e not in ignore]
+    config_dict['economy'] = __economy
     config_dict['years'] = years
     config_dict['scenario'] = scenario
     return config_dict
@@ -271,9 +276,9 @@ def solve_model(solve_state,solver):
         subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt --wlp tmp/model.lp --check",shell=True)
     return None
 
-def combine_results(economy):
+def process_results(economy):
     """
-    Combine model solution and write as the result as an Excel file.
+    Combine OSeMOSYS solution files and write as the result as an Excel file where each result parameter is a tab in the Excel file.
     """
     print('\n-- Preparing results...')
     parent_directory = "./results/"
@@ -329,16 +334,17 @@ def combine_results(economy):
                 #df = df.loc[(df != 0).any(1)] # remove rows if all are zero
                 _result_tables[key] = df
         _result_tables[key]=_result_tables[key].fillna(0)
-    result_tables = {k: v for k, v in _result_tables.items() if not v.empty}
-    return result_tables
+    results_tables = {k: v for k, v in _result_tables.items() if not v.empty}
+    return results_tables
 
 def write_results(results_tables,economy,sector,scenario,model_start):
     scenario = scenario.lower()
     _sector = "_".join(sector)
-    with pd.ExcelWriter('./results/{}/{}_results_{}_{}_{}.xlsx'.format(economy,economy,_sector,scenario,model_start)) as writer:
-        for k, v in results_tables.items():
-            v.to_excel(writer, sheet_name=k, merge_cells=False)
-    print('\n-- Results are available in the folder /results/{} \n'.format(economy))
+    if bool(results_tables):
+        with pd.ExcelWriter('./results/{}/{}_results_{}_{}_{}.xlsx'.format(economy,economy,_sector,scenario,model_start)) as writer:
+            for k, v in results_tables.items():
+                v.to_excel(writer, sheet_name=k, merge_cells=False)
+        print('\n-- Results are available in the folder /results/{} \n'.format(economy))
     return None
 
 @hello.command()
@@ -390,6 +396,8 @@ def combine(input,output):
 def move(path_from,path_to):
     """
     Moves files from subdirectories from PATH_FROM to PATH_TO.
+
+    An example use case is moving results files from multiple economy folders within /results. You can set PATH_FROM to results and PATH_TO to results/apec.
     """
     try:
         os.mkdir(path_to)
