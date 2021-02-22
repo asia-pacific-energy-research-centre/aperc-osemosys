@@ -38,7 +38,7 @@ def clean():
     multiple=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
 @click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
-@click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced'],case_sensitive=False),help="Enter your scenario")
+@click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero'],case_sensitive=False),help="Enter your scenario")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
 @click.option('--noemissions',is_flag=True,help="When this is used, emissions factors from `data-sheet-emissions.xlsx` will not be used.")
 def solve(economy,ignore,sector,years,scenario,solver,mydemands,noemissions):
