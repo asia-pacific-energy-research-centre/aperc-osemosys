@@ -40,8 +40,7 @@ def clean():
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
 @click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero'],case_sensitive=False),help="Enter your scenario")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
-@click.option('--noemissions',is_flag=True,help="When this is used, emissions factors from `data-sheet-emissions.xlsx` will not be used.")
-def solve(economy,ignore,sector,years,scenario,solver,mydemands,noemissions):
+def solve(economy,ignore,sector,years,scenario,solver,mydemands):
     """Solve the model and generate a results file.
 
     Results are available in results/[economy]/results.xlsx.
@@ -51,12 +50,14 @@ def solve(economy,ignore,sector,years,scenario,solver,mydemands,noemissions):
     print('\n-- Model started at {}.'.format(model_start))
 
     solve_state = True
-    config_dict = create_config_dict(economy,ignore,sector,years,scenario,mydemands,noemissions)
+    config_dict = create_config_dict(economy,ignore,sector,years,scenario,mydemands)
     keep_list = load_data_config()
     for e in config_dict['economy']:
         economy = e
         list_of_dicts = load_and_filter(keep_list,config_dict,economy)
         combined_data = combine_datasheets(list_of_dicts)
+        combined_data = make_emissions_factors(combined_data,sector)
+        #combined_data = emissions_factors(combined_data)
         write_inputs(combined_data)
         use_otoole(config_dict)
         solve_model(solve_state,solver)
@@ -66,7 +67,7 @@ def solve(economy,ignore,sector,years,scenario,solver,mydemands,noemissions):
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
 
-def create_config_dict(economy,ignore,sector,years,scenario,mydemands,noemissions):
+def create_config_dict(economy,ignore,sector,years,scenario,mydemands):
     """
     Create dictionary `config_dict` containing specifications for model run.
     """
@@ -83,10 +84,6 @@ def create_config_dict(economy,ignore,sector,years,scenario,mydemands,noemission
         _sector.append('YYY')
     if mydemands:
         _sector.append('DEM')
-    if noemissions:
-        print('\n-- Ignoring `data-sheet-emissions.xlsx')
-    else:
-        _sector.append('EM')
     config_dict['sector'] = _sector
     if economy[0]=='APEC' or economy[0]=='apec':
         _economy = ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA','08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE','15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN']
@@ -209,6 +206,68 @@ def write_inputs(combined_data):
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
+
+def demand_emissions(df_data_sheet,emission_map):
+    df_EmissionActivityRatio = df_data_sheet.merge(right = emission_map, left_on= ["FUEL"], right_index=True)
+    df_EmissionActivityRatio.iloc[:,4:-1] = df_EmissionActivityRatio.iloc[:,4:-1].mul(df_EmissionActivityRatio.loc[:,"Carbon content(kg/GJ)"],axis =0 )*1000
+    #df_EmissionActivityRatio = df_EmissionActivityRatio.set_index("REGION","TECHNOLOGY","FUEL").groupby(["REGION","TECHNOLOGY"]).sum()
+    #df_EmissionActivityRatio = df_EmissionActivityRatio.reset_index()
+    df_EmissionActivityRatio["EMISSION"] = df_EmissionActivityRatio["FUEL"].astype(str) + "_CO2"
+    df_EmissionActivityRatio = df_EmissionActivityRatio.drop(["FUEL","Carbon content(kg/GJ)"],axis =1 )
+    df_EmissionActivityRatio["MODE_OF_OPERATION"] = 1
+    #df_EmissionActivityRatio["UNITS"] = "Mt CO2 per PJ"
+    #df_EmissionActivityRatio["NOTES"] = np.nan
+    return df_EmissionActivityRatio
+
+# emissions factors
+def make_emissions_factors(combined_data,sector):
+    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    if sector[0]=="DEMANDS" or sector[0]=="demands":
+        _sector = demand_sectors
+    else:
+        _sector = [s for s in sector]
+    if any(s in _sector for s in demand_sectors):
+        with resources.open_text('aperc_osemosys','emissions_factors.csv') as open_file:
+            Emission_egeda = pd.read_csv(open_file)
+        #Emission_egeda=pd.read_csv('./data/emissions_factors.csv')
+        Emission_egeda = Emission_egeda.set_index(['FUEL'])
+        #print(Emission_egeda.info())
+    
+        df_emissions_activity = pd.DataFrame()
+        start_cols = ['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION']
+        end_cols =  [*range(2017,2071)]
+        all_cols = start_cols + end_cols
+    
+        #input_activity = pd.read_excel('./tmp/combined_data.xlsx', sheet_name = "InputActivityRatio", header=0)
+        input_activity = combined_data['InputActivityRatio']
+        #print(input_activity.info())
+        try: 
+            EmissionActivityRatio = demand_emissions(input_activity,Emission_egeda)
+            EmissionActivityRatio = EmissionActivityRatio[all_cols]
+            #EmissionActivityRatio.to_excel(data['Output_location']+ "EmissionActivityRatio" + paths+".xlsx" ,index= False)
+        except:
+            EmissionActivityRatio = demand_emissions(input_activity,Emission_egeda)
+            #EmissionActivityRatio["SCENARIO"] = "Net-zero"
+            EmissionActivityRatio = EmissionActivityRatio[all_cols]
+            #df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
+            #EmissionActivityRatio["SCENARIO"] = "Reference"
+            ##EmissionActivityRatio.to_excel(data['Output_location']+ "EmissionActivityRatio" + paths+".xlsx" ,index= False)
+        df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
+        df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("NE_")]
+        # CCS
+        df_emissions_activity = df_emissions_activity.reset_index(drop = True)
+        df_CCS = df_emissions_activity[df_emissions_activity["TECHNOLOGY"].str.contains('ccs')]
+        df_captured  = df_emissions_activity.iloc[df_CCS.index]
+        
+        df_captured.iloc[:,7:] *= 0.8
+        df_captured.loc[:,"EMISSION"] = df_captured["EMISSION"].str.replace("CO2","CCS",regex = True )
+        df_emissions_activity.iloc[df_CCS.index,7:] *= 0.2
+        df_emissions_activity = pd.concat([df_emissions_activity,df_captured])
+
+        df_emissions_activity.to_excel('./tmp/emissions_activity.xlsx' ,index= False)
+        combined_data['EMISSION'] = df_emissions_activity[['EMISSION']].drop_duplicates()
+        combined_data['EmissionActivityRatio'] = df_emissions_activity
+    return combined_data
 
 def use_otoole(config_dict):
     """

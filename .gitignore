@@ -55,3 +55,4 @@ ose-env/
 *.csv
 datafile_from_python.txt
 model.txt
+!emissions_factors.csv
