@@ -29,7 +29,10 @@ def clean():
 @click.option('--economy','-e',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
-    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,help="Type the acronym of the economy you want to solve. Multiple economies can be solved by repeating the command. Use 'APEC' to solve all economies.")
+    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,
+    help="Type the acronym of the economy you want to solve."
+        " Multiple economies can be solved by repeating the command."
+        " Use 'APEC' to solve all economies. Note that this could take a long time, especially if multiple sectors are solved.")
 @click.option('--ignore','-i',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
@@ -38,12 +41,20 @@ def clean():
     multiple=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
 @click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
-@click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero'],case_sensitive=False),help="Enter your scenario")
-@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
+@click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero','All'],case_sensitive=False),multiple=True,help="Enter your scenario. This is not case sensitive.")
+@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver. At present, only GLPK is available.")
 def solve(economy,ignore,sector,years,scenario,solver,mydemands):
     """Solve the model and generate a results file.
 
-    Results are available in results/[economy]/results.xlsx.
+    Results are available in the folder results/[economy]/.
+
+    You can solve the model for multiple economies and multiple sectors. Note that it is faster to solve sectors individually.
+
+    Please copy the most recent data sheets from Integration\OSeMOSYS data sheets\2018.
+
+    The XXX file is required for demand, refining, and supply sectors.
+
+    Emission factors are calculated automatically for demand sectors.
     """
     tic = time.time()
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
@@ -53,16 +64,17 @@ def solve(economy,ignore,sector,years,scenario,solver,mydemands):
     config_dict = create_config_dict(economy,ignore,sector,years,scenario,mydemands)
     keep_list = load_data_config()
     for e in config_dict['economy']:
-        economy = e
-        list_of_dicts = load_and_filter(keep_list,config_dict,economy)
-        combined_data = combine_datasheets(list_of_dicts)
-        combined_data = make_emissions_factors(combined_data,sector)
-        #combined_data = emissions_factors(combined_data)
-        write_inputs(combined_data)
-        use_otoole(config_dict)
-        solve_model(solve_state,solver)
-        results_tables = process_results(economy)
-        write_results(results_tables,economy,sector,scenario,model_start)
+        for c in config_dict['scenario']:
+            economy = e
+            scenario = c
+            list_of_dicts = load_and_filter(keep_list,config_dict,economy,scenario)
+            combined_data = combine_datasheets(list_of_dicts)
+            combined_data = make_emissions_factors(combined_data,sector)
+            write_inputs(combined_data)
+            use_otoole(config_dict)
+            solve_model(solve_state,solver)
+            results_tables = process_results(economy)
+            write_results(results_tables,economy,sector,scenario,model_start)
     #
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
@@ -80,7 +92,7 @@ def create_config_dict(economy,ignore,sector,years,scenario,mydemands):
         _sector = demand_sectors
     else:
         _sector = [s for s in sector]
-    print(_sector)
+    #print(_sector)
     if any(s in _sector for s in demand_sectors):
         _sector.append('XXX')
     elif any(s in _sector for s in hyd_sector):
@@ -97,9 +109,12 @@ def create_config_dict(economy,ignore,sector,years,scenario,mydemands):
     else:
         _economy = [e for e in economy]
     __economy = [e for e in _economy if e not in ignore]
+    if scenario[0]=='All' or scenario[0]=='all':
+        scenario = ['Reference','Net-zero']
+    _scenario = [c for c in scenario]
     config_dict['economy'] = __economy
     config_dict['years'] = years
-    config_dict['scenario'] = scenario
+    config_dict['scenario'] = _scenario
     return config_dict
 
 def load_data_config():
@@ -120,14 +135,15 @@ def load_data_config():
     print('    ...successfully read in data configuration\n')
     return keep_list
 
-def load_and_filter(keep_list,config_dict,economy):
+def load_and_filter(keep_list,config_dict,economy,scenario):
     """
     Load data sets according to specified sectors.
 
     Filters data based on scenario, years, and economies.
     """
     subset_of_economies = economy
-    scenario = config_dict['scenario']
+    scenario = scenario
+    print('Solving {} scenario...\n'.format(scenario))
     with resources.open_text('aperc_osemosys','model_config.yml') as open_file:
         contents = yaml.load(open_file, Loader=yaml.FullLoader)
     list_of_dicts = []
