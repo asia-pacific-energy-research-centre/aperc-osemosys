@@ -23,7 +23,7 @@ def clean():
     Warning: temporary data results files will be deleted!!!
     """
     print('\n-- Deleting temporary data and results...\n')
-    subprocess.run("rm -f tmp/* results/*.xlsx",shell=True)
+    subprocess.run("rm -f tmp/* results/",shell=True)
 
 @hello.command()
 @click.option('--economy','-e',type=click.Choice(
@@ -75,7 +75,6 @@ def solve(economy,ignore,sector,years,scenario,solver,mydemands):
             solve_model(solve_state,solver)
             results_tables = process_results(economy)
             write_results(results_tables,economy,sector,scenario,model_start)
-    #
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
 
@@ -436,14 +435,14 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 
 @hello.command()
 @click.argument('input')
-@click.option('--output','-o',default='results',prompt=False)
+@click.argument('output')
 def combine(input,output):
     """
     Combine results files.
 
-    'input' is a required argument. 'input' is relative to the top level directory.
+    'input' is the folder of results you want to combine to one file. 'input' is relative to the top level directory.
 
-    'output' is optional. 'output' is the directory for the combined results file.
+    'output' is the directory where you want to save the single file of combined results.
     """
     try:
         os.mkdir(output)
@@ -467,8 +466,11 @@ def combine(input,output):
         _indices = [ele for ele in indices if ele not in unwanted_members]
         list_of_dfs = []
         for _dict in list_of_dicts: #AccumulatedNewCapacity, AccumulatedNewCapacity, CapitalInvestment, CapitalInvestment, etc, etc
-            _df = _dict[key]
-            list_of_dfs.append(_df)
+            try:
+                _df = _dict[key]
+                list_of_dfs.append(_df)
+            except:
+                pass
         _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
         combined_data[key] = _dfs
     _path = os.path.join(output,'combined_results_{}.xlsx').format(model_start)
