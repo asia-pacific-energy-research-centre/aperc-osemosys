@@ -73,6 +73,9 @@ def create_config_dict(economy,ignore,sector,years,scenario,mydemands):
     """
     config_dict = {}
     demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    hyd_sector = ['HYD']
+    pow_sector = ['POW']
+    ref_and_sup = ['REF','SUP']
     if sector[0]=="DEMANDS" or sector[0]=="demands":
         _sector = demand_sectors
     else:
@@ -80,8 +83,12 @@ def create_config_dict(economy,ignore,sector,years,scenario,mydemands):
     print(_sector)
     if any(s in _sector for s in demand_sectors):
         _sector.append('XXX')
-    else:
-        _sector.append('YYY')
+    elif any(s in _sector for s in hyd_sector):
+        _sector.append('XXX')
+    elif any(s in _sector for s in ref_and_sup):
+        _sector.append('XXX')
+    #else:
+    #    _sector.append('YYY')
     if mydemands:
         _sector.append('DEM')
     config_dict['sector'] = _sector
