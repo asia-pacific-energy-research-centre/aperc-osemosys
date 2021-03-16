@@ -460,6 +460,8 @@ def combine(input,output,scenario,prefix):
     files = glob.glob(os.path.join(input,"*.xlsx"))
     scenario = scenario.lower()
     _files = [k for k in files if scenario in k]
+    _files = sorted(_files)
+    print(_files)
     list_of_dicts = []
     for f in _files:
         print('Combining {}'.format(f))
