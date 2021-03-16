@@ -436,13 +436,19 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 @hello.command()
 @click.argument('input')
 @click.argument('output')
-def combine(input,output):
+@click.option('--scenario','-c',type=click.Choice(['Reference','Net-zero'],case_sensitive=False), help="Select results matching Reference or Net-zero.")
+@click.option('--prefix','-p', help="Add a prefix to the output filename, such as the economy name.")
+def combine(input,output,scenario,prefix):
     """
     Combine results files.
 
     'input' is the folder of results you want to combine to one file. 'input' is relative to the top level directory.
 
     'output' is the directory where you want to save the single file of combined results.
+
+    'scenario' can be either Reference or Net-zero.
+
+    'prefix' should be an economy abbreviation, e.g. 03_CDA.
     """
     try:
         os.mkdir(output)
@@ -452,8 +458,11 @@ def combine(input,output):
         print ("Successfully created the directory %s " % output)
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
     files = glob.glob(os.path.join(input,"*.xlsx"))
+    scenario = scenario.lower()
+    _files = [k for k in files if scenario in k]
     list_of_dicts = []
-    for f in files:
+    for f in _files:
+        print('Combining {}'.format(f))
         _dict = pd.read_excel(f,sheet_name=None)
         list_of_dicts.append(_dict)
     with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
@@ -473,7 +482,8 @@ def combine(input,output):
                 pass
         _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
         combined_data[key] = _dfs
-    _path = os.path.join(output,'combined_results_{}.xlsx').format(model_start)
+        __path = prefix+'_'+scenario+'_results_{}.xlsx'.format(model_start)
+    _path = os.path.join(output,__path)
     with pd.ExcelWriter(_path) as writer:
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
