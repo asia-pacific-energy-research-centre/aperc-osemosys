@@ -437,8 +437,8 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 @click.argument('input')
 @click.argument('output')
 @click.option('--scenario','-c',type=click.Choice(['Reference','Net-zero'],case_sensitive=False), help="Select results matching Reference or Net-zero.")
-@click.option('--prefix','-p', help="Add a prefix to the output filename, such as the economy name.")
-def combine(input,output,scenario,prefix):
+@click.option('--economy','-e', help="Add a prefix to the output filename, such as the economy name.")
+def combine(input,output,scenario,economy):
     """
     Combine results files.
 
@@ -448,7 +448,7 @@ def combine(input,output,scenario,prefix):
 
     'scenario' can be either Reference or Net-zero.
 
-    'prefix' should be an economy abbreviation, e.g. 03_CDA.
+    'economy' should be an economy abbreviation, e.g. 03_CDA.
     """
     try:
         os.mkdir(output)
@@ -484,7 +484,7 @@ def combine(input,output,scenario,prefix):
                 pass
         _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
         combined_data[key] = _dfs
-        __path = prefix+'_'+scenario+'_results_{}.xlsx'.format(model_start)
+        __path = economy+'_'+scenario+'_results_{}.xlsx'.format(model_start)
     _path = os.path.join(output,__path)
     with pd.ExcelWriter(_path) as writer:
         for k, v in combined_data.items():
