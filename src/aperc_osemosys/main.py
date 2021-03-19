@@ -230,15 +230,11 @@ def write_inputs(combined_data):
     return None
 
 def demand_emissions(df_data_sheet,emission_map):
-    df_EmissionActivityRatio = df_data_sheet.merge(right = emission_map, left_on= ["FUEL"], right_index=True)
-    df_EmissionActivityRatio.iloc[:,4:-1] = df_EmissionActivityRatio.iloc[:,4:-1].mul(df_EmissionActivityRatio.loc[:,"Carbon content(kg/GJ)"],axis =0 )*1000
-    #df_EmissionActivityRatio = df_EmissionActivityRatio.set_index("REGION","TECHNOLOGY","FUEL").groupby(["REGION","TECHNOLOGY"]).sum()
-    #df_EmissionActivityRatio = df_EmissionActivityRatio.reset_index()
+    df_EmissionActivityRatio = df_data_sheet.merge(right = emission_map, left_on= ["REGION","FUEL"], right_index=True)
+    df_EmissionActivityRatio.iloc[:,4:-1] = df_EmissionActivityRatio.iloc[:,4:-1].mul(df_EmissionActivityRatio.loc[:,"Emission Factor(Mt_CO2/PJ)"],axis =0 )*1000
     df_EmissionActivityRatio["EMISSION"] = df_EmissionActivityRatio["FUEL"].astype(str) + "_CO2"
-    df_EmissionActivityRatio = df_EmissionActivityRatio.drop(["FUEL","Carbon content(kg/GJ)"],axis =1 )
+    df_EmissionActivityRatio = df_EmissionActivityRatio.drop(["FUEL","Emission Factor(Mt_CO2/PJ)"],axis =1 )
     df_EmissionActivityRatio["MODE_OF_OPERATION"] = 1
-    #df_EmissionActivityRatio["UNITS"] = "Mt CO2 per PJ"
-    #df_EmissionActivityRatio["NOTES"] = np.nan
     return df_EmissionActivityRatio
 
 # emissions factors
@@ -251,42 +247,38 @@ def make_emissions_factors(combined_data,sector):
     if any(s in _sector for s in demand_sectors):
         with resources.open_text('aperc_osemosys','emissions_factors.csv') as open_file:
             Emission_egeda = pd.read_csv(open_file)
-        #Emission_egeda=pd.read_csv('./data/emissions_factors.csv')
-        Emission_egeda = Emission_egeda.set_index(['FUEL'])
-        #print(Emission_egeda.info())
+        Emission_egeda = Emission_egeda.set_index(['REGION','FUEL'])
     
         df_emissions_activity = pd.DataFrame()
         start_cols = ['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION']
         end_cols =  [*range(2017,2071)]
-        all_cols = start_cols + end_cols
-    
-        #input_activity = pd.read_excel('./tmp/combined_data.xlsx', sheet_name = "InputActivityRatio", header=0)
+        all_cols = start_cols + end_cols 
         input_activity = combined_data['InputActivityRatio']
-        #print(input_activity.info())
         try: 
             EmissionActivityRatio = demand_emissions(input_activity,Emission_egeda)
             EmissionActivityRatio = EmissionActivityRatio[all_cols]
-            #EmissionActivityRatio.to_excel(data['Output_location']+ "EmissionActivityRatio" + paths+".xlsx" ,index= False)
         except:
             EmissionActivityRatio = demand_emissions(input_activity,Emission_egeda)
-            #EmissionActivityRatio["SCENARIO"] = "Net-zero"
             EmissionActivityRatio = EmissionActivityRatio[all_cols]
-            #df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
-            #EmissionActivityRatio["SCENARIO"] = "Reference"
-            ##EmissionActivityRatio.to_excel(data['Output_location']+ "EmissionActivityRatio" + paths+".xlsx" ,index= False)
         df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
         df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("NE_")]
-        # CCS
-        df_emissions_activity = df_emissions_activity.reset_index(drop = True)
-        df_CCS = df_emissions_activity[df_emissions_activity["TECHNOLOGY"].str.contains('ccs')]
-        df_captured  = df_emissions_activity.iloc[df_CCS.index]
-        
-        df_captured.iloc[:,7:] *= 0.8
-        df_captured.loc[:,"EMISSION"] = df_captured["EMISSION"].str.replace("CO2","CCS",regex = True )
-        df_emissions_activity.iloc[df_CCS.index,7:] *= 0.2
-        df_emissions_activity = pd.concat([df_emissions_activity,df_captured])
-
-        df_emissions_activity.to_excel('./tmp/emissions_activity.xlsx' ,index= False)
+        df_ccs = df_emissions_activity.loc[df_emissions_activity['TECHNOLOGY'].str.contains('ccs')]
+        # Use 0.2 factor for emissions in CCS technologies
+        df_ccs_emit = df_ccs.copy()
+        df_ccs_emit = df_ccs_emit.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'])
+        df_ccs_emit = df_ccs_emit.astype(float).mul(0.2)
+        df_ccs_emit.reset_index(inplace=True)
+        df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("_ccs")]
+        df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_emit])
+        # Add fuel with suffix "CO2_captured" for CCS technologies
+        #df_ccs['EMISSION'] = df_ccs['EMISSION'].str.replace("CO2","captured") # this throws a copy warning
+        mask = df_ccs['EMISSION'].str.contains('CO2')
+        df_ccs_captured = df_ccs.copy()
+        df_ccs_captured.loc[mask,"EMISSION"] = df_ccs_captured['EMISSION'].str.replace("CO2","CO2_captured")
+        #df_ccs.replace('CO2',"captured",inplace=True)
+        print(df_ccs_captured)
+        # concat the captured emissions to the Emisions Activity Ratio dataframe
+        df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_captured])
         combined_data['EMISSION'] = df_emissions_activity[['EMISSION']].drop_duplicates()
         combined_data['EmissionActivityRatio'] = df_emissions_activity
     return combined_data
