@@ -276,7 +276,6 @@ def make_emissions_factors(combined_data,sector):
         df_ccs_captured = df_ccs.copy()
         df_ccs_captured.loc[mask,"EMISSION"] = df_ccs_captured['EMISSION'].str.replace("CO2","CO2_captured")
         #df_ccs.replace('CO2',"captured",inplace=True)
-        print(df_ccs_captured)
         # concat the captured emissions to the Emisions Activity Ratio dataframe
         df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_captured])
         combined_data['EMISSION'] = df_emissions_activity[['EMISSION']].drop_duplicates()
