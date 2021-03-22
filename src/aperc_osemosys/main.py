@@ -20,6 +20,10 @@ def hello():
 def clean():
     """Delete temporary files created during the running of the model. Data sheets are not deleted.
 
+    The following directories are deleted:
+    - tmp
+    - results
+
     Warning: temporary data results files will be deleted!!!
     """
     print('\n-- Deleting temporary data and results...\n')
@@ -43,7 +47,8 @@ def clean():
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
 @click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero','All'],case_sensitive=False),multiple=True,help="Enter your scenario. This is not case sensitive.")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver. At present, only GLPK is available.")
-def solve(economy,ignore,sector,years,scenario,solver):
+@click.option('--ccs',default=0.2,type=click.FloatRange(0,1),help="Enter a capture rate for CCS. Rate must be between 0 and 1. The default rate is 0.2.")
+def solve(economy,ignore,sector,years,scenario,solver,ccs):
     """Solve the model and generate a results file.
 
     Results are available in the folder results/[economy]/.
@@ -69,7 +74,7 @@ def solve(economy,ignore,sector,years,scenario,solver):
             scenario = c
             list_of_dicts = load_and_filter(keep_list,config_dict,economy,scenario)
             combined_data = combine_datasheets(list_of_dicts)
-            combined_data = make_emissions_factors(combined_data,sector)
+            combined_data = make_emissions_factors(combined_data,sector,ccs)
             write_inputs(combined_data)
             use_otoole(config_dict)
             solve_model(solve_state,solver)
@@ -238,7 +243,7 @@ def demand_emissions(df_data_sheet,emission_map):
     return df_EmissionActivityRatio
 
 # emissions factors
-def make_emissions_factors(combined_data,sector):
+def make_emissions_factors(combined_data,sector,ccs):
     demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
     if sector[0]=="DEMANDS" or sector[0]=="demands":
         _sector = demand_sectors
@@ -266,7 +271,7 @@ def make_emissions_factors(combined_data,sector):
         # Use 0.2 factor for emissions in CCS technologies
         df_ccs_emit = df_ccs.copy()
         df_ccs_emit = df_ccs_emit.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'])
-        df_ccs_emit = df_ccs_emit.astype(float).mul(0.2)
+        df_ccs_emit = df_ccs_emit.astype(float).mul(ccs)
         df_ccs_emit.reset_index(inplace=True)
         df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("_ccs")]
         df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_emit])
@@ -275,6 +280,10 @@ def make_emissions_factors(combined_data,sector):
         mask = df_ccs['EMISSION'].str.contains('CO2')
         df_ccs_captured = df_ccs.copy()
         df_ccs_captured.loc[mask,"EMISSION"] = df_ccs_captured['EMISSION'].str.replace("CO2","CO2_captured")
+        df_ccs_captured = df_ccs_captured.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'])
+        df_ccs_captured = df_ccs_captured.astype(float).mul(1-ccs)
+        #df_ccs_captured = df_ccs_captured.astype(float).mul(0.8)
+        df_ccs_captured.reset_index(inplace=True)
         #df_ccs.replace('CO2',"captured",inplace=True)
         # concat the captured emissions to the Emisions Activity Ratio dataframe
         df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_captured])
