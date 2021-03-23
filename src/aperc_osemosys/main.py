@@ -20,82 +20,105 @@ def hello():
 def clean():
     """Delete temporary files created during the running of the model. Data sheets are not deleted.
 
+    The following directories are deleted:
+    - tmp
+    - results
+
     Warning: temporary data results files will be deleted!!!
     """
     print('\n-- Deleting temporary data and results...\n')
-    subprocess.run("rm -f tmp/* results/*.xlsx",shell=True)
+    subprocess.run("rm -f tmp/* results/",shell=True)
 
 @hello.command()
 @click.option('--economy','-e',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
-    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,help="Type the acronym of the economy you want to solve. Multiple economies can be solved by repeating the command. Use 'APEC' to solve all economies.")
+    '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN','APEC'],case_sensitive=False),multiple=True,
+    help="Type the acronym of the economy you want to solve."
+        " Multiple economies can be solved by repeating the command."
+        " Use 'APEC' to solve all economies. Note that this could take a long time, especially if multiple sectors are solved.")
 @click.option('--ignore','-i',type=click.Choice(
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN'],case_sensitive=False),multiple=True,help="Ignore an economy. This is useful if a sector has no data for an economy. Example: no agriculture in Hong Kong, China.")
 @click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
-@click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
+#@click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
-@click.option('--scenario','-c',default="Current",type=click.Choice(['Current','Announced'],case_sensitive=False),help="Enter your scenario")
-@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver.")
-@click.option('--noemissions',is_flag=True,help="When this is used, emissions factors from `data-sheet-emissions.xlsx` will not be used.")
-def solve(economy,ignore,sector,years,scenario,solver,mydemands,noemissions):
+@click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero','All'],case_sensitive=False),multiple=True,help="Enter your scenario. This is not case sensitive.")
+@click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver. At present, only GLPK is available.")
+@click.option('--ccs',default=0.2,type=click.FloatRange(0,1),help="Enter a capture rate for CCS. Rate must be between 0 and 1. The default rate is 0.2.")
+def solve(economy,ignore,sector,years,scenario,solver,ccs):
     """Solve the model and generate a results file.
 
-    Results are available in results/[economy]/results.xlsx.
+    Results are available in the folder results/[economy]/.
+
+    You can solve the model for multiple economies and multiple sectors. Note that it is faster to solve sectors individually.
+
+    Please copy the most recent data sheets from Integration\OSeMOSYS data sheets\2018.
+
+    The XXX file is required for demand, refining, and supply sectors.
+
+    Emission factors are calculated automatically for demand sectors.
     """
     tic = time.time()
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
     print('\n-- Model started at {}.'.format(model_start))
 
     solve_state = True
-    config_dict = create_config_dict(economy,ignore,sector,years,scenario,mydemands,noemissions)
+    config_dict = create_config_dict(economy,ignore,sector,years,scenario)
     keep_list = load_data_config()
     for e in config_dict['economy']:
-        economy = e
-        list_of_dicts = load_and_filter(keep_list,config_dict,economy)
-        combined_data = combine_datasheets(list_of_dicts)
-        write_inputs(combined_data)
-        use_otoole(config_dict)
-        solve_model(solve_state,solver)
-        results_tables = process_results(economy)
-        write_results(results_tables,economy,sector,scenario,model_start)
-    #
+        for c in config_dict['scenario']:
+            economy = e
+            scenario = c
+            list_of_dicts = load_and_filter(keep_list,config_dict,economy,scenario)
+            combined_data = combine_datasheets(list_of_dicts)
+            combined_data = make_emissions_factors(combined_data,sector,ccs)
+            write_inputs(combined_data)
+            use_otoole(config_dict)
+            solve_model(solve_state,solver)
+            results_tables = process_results(economy)
+            write_results(results_tables,economy,sector,scenario,model_start)
     toc = time.time()
     print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
 
-def create_config_dict(economy,ignore,sector,years,scenario,mydemands,noemissions):
+def create_config_dict(economy,ignore,sector,years,scenario):
     """
     Create dictionary `config_dict` containing specifications for model run.
     """
     config_dict = {}
     demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    hyd_sector = ['HYD']
+    pow_sector = ['POW']
+    ref_and_sup = ['REF','SUP']
     if sector[0]=="DEMANDS" or sector[0]=="demands":
         _sector = demand_sectors
     else:
         _sector = [s for s in sector]
-    print(_sector)
+    #print(_sector)
     if any(s in _sector for s in demand_sectors):
         _sector.append('XXX')
-    else:
-        _sector.append('YYY')
-    if mydemands:
-        _sector.append('DEM')
-    if noemissions:
-        print('\n-- Ignoring `data-sheet-emissions.xlsx')
-    else:
-        _sector.append('EM')
+    elif any(s in _sector for s in hyd_sector):
+        _sector.append('XXX')
+    elif any(s in _sector for s in ref_and_sup):
+        _sector.append('XXX')
+    #else:
+    #    _sector.append('YYY')
+    #if mydemands:
+    #    _sector.append('DEM')
     config_dict['sector'] = _sector
     if economy[0]=='APEC' or economy[0]=='apec':
         _economy = ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA','08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE','15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN']
     else:
         _economy = [e for e in economy]
     __economy = [e for e in _economy if e not in ignore]
+    if scenario[0]=='All' or scenario[0]=='all':
+        scenario = ['Reference','Net-zero']
+    _scenario = [c for c in scenario]
     config_dict['economy'] = __economy
     config_dict['years'] = years
-    config_dict['scenario'] = scenario
+    config_dict['scenario'] = _scenario
     return config_dict
 
 def load_data_config():
@@ -116,14 +139,15 @@ def load_data_config():
     print('    ...successfully read in data configuration\n')
     return keep_list
 
-def load_and_filter(keep_list,config_dict,economy):
+def load_and_filter(keep_list,config_dict,economy,scenario):
     """
     Load data sets according to specified sectors.
 
     Filters data based on scenario, years, and economies.
     """
     subset_of_economies = economy
-    scenario = config_dict['scenario']
+    scenario = scenario
+    print('Solving {} scenario...\n'.format(scenario))
     with resources.open_text('aperc_osemosys','model_config.yml') as open_file:
         contents = yaml.load(open_file, Loader=yaml.FullLoader)
     list_of_dicts = []
@@ -209,6 +233,63 @@ def write_inputs(combined_data):
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
+
+def demand_emissions(df_data_sheet,emission_map):
+    df_EmissionActivityRatio = df_data_sheet.merge(right = emission_map, left_on= ["REGION","FUEL"], right_index=True)
+    df_EmissionActivityRatio.iloc[:,4:-1] = df_EmissionActivityRatio.iloc[:,4:-1].mul(df_EmissionActivityRatio.loc[:,"Emission Factor(Mt_CO2/PJ)"],axis =0 )*1000
+    df_EmissionActivityRatio["EMISSION"] = df_EmissionActivityRatio["FUEL"].astype(str) + "_CO2"
+    df_EmissionActivityRatio = df_EmissionActivityRatio.drop(["FUEL","Emission Factor(Mt_CO2/PJ)"],axis =1 )
+    df_EmissionActivityRatio["MODE_OF_OPERATION"] = 1
+    return df_EmissionActivityRatio
+
+# emissions factors
+def make_emissions_factors(combined_data,sector,ccs):
+    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    if sector[0]=="DEMANDS" or sector[0]=="demands":
+        _sector = demand_sectors
+    else:
+        _sector = [s for s in sector]
+    if any(s in _sector for s in demand_sectors):
+        with resources.open_text('aperc_osemosys','emissions_factors.csv') as open_file:
+            Emission_egeda = pd.read_csv(open_file)
+        Emission_egeda = Emission_egeda.set_index(['REGION','FUEL'])
+    
+        df_emissions_activity = pd.DataFrame()
+        start_cols = ['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION']
+        end_cols =  [*range(2017,2071)]
+        all_cols = start_cols + end_cols 
+        input_activity = combined_data['InputActivityRatio']
+        try: 
+            EmissionActivityRatio = demand_emissions(input_activity,Emission_egeda)
+            EmissionActivityRatio = EmissionActivityRatio[all_cols]
+        except:
+            EmissionActivityRatio = demand_emissions(input_activity,Emission_egeda)
+            EmissionActivityRatio = EmissionActivityRatio[all_cols]
+        df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
+        df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("NE_")]
+        df_ccs = df_emissions_activity.loc[df_emissions_activity['TECHNOLOGY'].str.contains('ccs')]
+        # Use 0.2 factor for emissions in CCS technologies
+        df_ccs_emit = df_ccs.copy()
+        df_ccs_emit = df_ccs_emit.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'])
+        df_ccs_emit = df_ccs_emit.astype(float).mul(ccs)
+        df_ccs_emit.reset_index(inplace=True)
+        df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("_ccs")]
+        df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_emit])
+        # Add fuel with suffix "CO2_captured" for CCS technologies
+        #df_ccs['EMISSION'] = df_ccs['EMISSION'].str.replace("CO2","captured") # this throws a copy warning
+        mask = df_ccs['EMISSION'].str.contains('CO2')
+        df_ccs_captured = df_ccs.copy()
+        df_ccs_captured.loc[mask,"EMISSION"] = df_ccs_captured['EMISSION'].str.replace("CO2","CO2_captured")
+        df_ccs_captured = df_ccs_captured.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'])
+        df_ccs_captured = df_ccs_captured.astype(float).mul(1-ccs)
+        #df_ccs_captured = df_ccs_captured.astype(float).mul(0.8)
+        df_ccs_captured.reset_index(inplace=True)
+        #df_ccs.replace('CO2',"captured",inplace=True)
+        # concat the captured emissions to the Emisions Activity Ratio dataframe
+        df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_captured])
+        combined_data['EMISSION'] = df_emissions_activity[['EMISSION']].drop_duplicates()
+        combined_data['EmissionActivityRatio'] = df_emissions_activity
+    return combined_data
 
 def use_otoole(config_dict):
     """
@@ -354,14 +435,20 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 
 @hello.command()
 @click.argument('input')
-@click.option('--output','-o',default='results',prompt=False)
-def combine(input,output):
+@click.argument('output')
+@click.option('--scenario','-c',type=click.Choice(['Reference','Net-zero'],case_sensitive=False), help="Select results matching Reference or Net-zero.")
+@click.option('--economy','-e', help="Add a prefix to the output filename, such as the economy name.")
+def combine(input,output,scenario,economy):
     """
     Combine results files.
 
-    'input' is a required argument. 'input' is relative to the top level directory.
+    'input' is the folder of results you want to combine to one file. 'input' is relative to the top level directory.
 
-    'output' is optional. 'output' is the directory for the combined results file.
+    'output' is the directory where you want to save the single file of combined results.
+
+    'scenario' can be either Reference or Net-zero.
+
+    'economy' should be an economy abbreviation, e.g. 03_CDA.
     """
     try:
         os.mkdir(output)
@@ -371,8 +458,13 @@ def combine(input,output):
         print ("Successfully created the directory %s " % output)
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
     files = glob.glob(os.path.join(input,"*.xlsx"))
+    scenario = scenario.lower()
+    _files = [k for k in files if scenario in k]
+    _files = sorted(_files)
+    print(_files)
     list_of_dicts = []
-    for f in files:
+    for f in _files:
+        print('Combining {}'.format(f))
         _dict = pd.read_excel(f,sheet_name=None)
         list_of_dicts.append(_dict)
     with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
@@ -385,11 +477,15 @@ def combine(input,output):
         _indices = [ele for ele in indices if ele not in unwanted_members]
         list_of_dfs = []
         for _dict in list_of_dicts: #AccumulatedNewCapacity, AccumulatedNewCapacity, CapitalInvestment, CapitalInvestment, etc, etc
-            _df = _dict[key]
-            list_of_dfs.append(_df)
+            try:
+                _df = _dict[key]
+                list_of_dfs.append(_df)
+            except:
+                pass
         _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
         combined_data[key] = _dfs
-    _path = os.path.join(output,'combined_results_{}.xlsx').format(model_start)
+        __path = economy+'_'+scenario+'_results_{}.xlsx'.format(model_start)
+    _path = os.path.join(output,__path)
     with pd.ExcelWriter(_path) as writer:
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
