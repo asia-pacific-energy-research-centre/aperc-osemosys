@@ -41,7 +41,7 @@ def clean():
     ['01_AUS','02_BD','03_CDA','04_CHL','05_PRC','06_HKC','07_INA',
     '08_JPN','09_ROK','10_MAS','11_MEX','12_NZ','13_PNG','14_PE',
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN'],case_sensitive=False),multiple=True,help="Ignore an economy. This is useful if a sector has no data for an economy. Example: no agriculture in Hong Kong, China.")
-@click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
+@click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','BNK','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
 #@click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
@@ -88,7 +88,7 @@ def create_config_dict(economy,ignore,sector,years,scenario):
     Create dictionary `config_dict` containing specifications for model run.
     """
     config_dict = {}
-    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN','BNK']
     hyd_sector = ['HYD']
     pow_sector = ['POW']
     ref_and_sup = ['REF','SUP']
@@ -244,7 +244,7 @@ def demand_emissions(df_data_sheet,emission_map):
 
 # emissions factors
 def make_emissions_factors(combined_data,sector,ccs):
-    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN']
+    demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN','BNK']
     if sector[0]=="DEMANDS" or sector[0]=="demands":
         _sector = demand_sectors
     else:
