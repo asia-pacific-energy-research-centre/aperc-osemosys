@@ -43,7 +43,6 @@ def clean():
     '15_RP','16_RUS','17_SIN','18_CT','19_THA','20_USA','21_VN'],case_sensitive=False),multiple=True,help="Ignore an economy. This is useful if a sector has no data for an economy. Example: no agriculture in Hong Kong, China.")
 @click.option('--sector','-s',type=click.Choice(['AGR','BLD','IND','OWN','NON','PIP','TRN','BNK','HYD','POW','REF','SUP','DEMANDS'],case_sensitive=False),
     multiple=True,help="Type the acronym of the sector you want to solve. Multiple sectors can be solved by repeating the command.")
-#@click.option('--mydemands', is_flag=True, help="When this is used, the demands in 'my-demands.xlsx' file are included.")
 @click.option('--years','-y',type=click.IntRange(2017,2070),prompt=True,help="Enter a number between 2017 and 2070")
 @click.option('--scenario','-c',default="Reference",type=click.Choice(['Reference','Net-zero','All'],case_sensitive=False),multiple=True,help="Enter your scenario. This is not case sensitive.")
 @click.option('--solver','-l',default='GLPK',type=click.Choice(['GLPK'],case_sensitive=False),help="Choose a solver. At present, only GLPK is available.")
