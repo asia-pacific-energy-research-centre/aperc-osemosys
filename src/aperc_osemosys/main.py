@@ -266,6 +266,14 @@ def make_emissions_factors(combined_data,sector,ccs):
             EmissionActivityRatio = EmissionActivityRatio[all_cols]
         df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
         df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("NE_")]
+        # This is a fix for Korea's Own-use coal products emissions
+        # multiply the projected emissions for 2_coal_products by 2.48
+        # 2.48 = the factor of historical emissions/original projected emissions from 2_coal_products
+        df_emissions_activity.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'],inplace=True)
+        df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1] = df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1]*2.48
+        df_emissions_activity.reset_index(inplace=True)
+        df_emissions_activity.info()
+        # end of Korea own-use correction
         df_ccs = df_emissions_activity.loc[df_emissions_activity['TECHNOLOGY'].str.contains('ccs')]
         # Use 0.2 factor for emissions in CCS technologies
         df_ccs_emit = df_ccs.copy()
@@ -286,6 +294,7 @@ def make_emissions_factors(combined_data,sector,ccs):
         #df_ccs.replace('CO2',"captured",inplace=True)
         # concat the captured emissions to the Emisions Activity Ratio dataframe
         df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_captured])
+        df_emissions_activity.to_csv('tmp/emissions_activity_ratios.csv')
         combined_data['EMISSION'] = df_emissions_activity[['EMISSION']].drop_duplicates()
         combined_data['EmissionActivityRatio'] = df_emissions_activity
     return combined_data
