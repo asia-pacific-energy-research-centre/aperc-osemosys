@@ -208,12 +208,20 @@ def combine_datasheets(list_of_dicts,economy):
     tmp_directory = 'tmp/{}'.format(economy)
     try:
         os.mkdir('./tmp')
-        os.mkdir(tmp_directory)
     except OSError:
         #print ("Creation of the directory %s failed" % path)
         pass
     else:
-        print ("Successfully created the directory %s " % tmp_directory)
+        print ("Successfully created the directory tmp")
+
+    try:
+        os.mkdir('./tmp/{}'.format(economy))
+    except OSError:
+        print ("Creation of the directory failed")
+        pass
+    else:
+        print ("Successfully created the directory tmp/{}".format(economy))
+
     combined_data = {}
     a_dict = list_of_dicts[0]
     for key in a_dict.keys():
