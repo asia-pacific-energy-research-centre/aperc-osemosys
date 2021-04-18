@@ -72,11 +72,11 @@ def solve(economy,ignore,sector,years,scenario,solver,ccs):
             economy = e
             scenario = c
             list_of_dicts = load_and_filter(keep_list,config_dict,economy,scenario)
-            combined_data = combine_datasheets(list_of_dicts)
-            combined_data = make_emissions_factors(combined_data,sector,ccs)
-            write_inputs(combined_data)
-            use_otoole(config_dict)
-            solve_model(solve_state,solver)
+            combined_data = combine_datasheets(list_of_dicts,economy)
+            combined_data = make_emissions_factors(combined_data,sector,ccs,economy)
+            write_inputs(combined_data,economy)
+            use_otoole(config_dict,economy)
+            solve_model(solve_state,solver,economy)
             results_tables = process_results(economy)
             write_results(results_tables,economy,sector,scenario,model_start)
     toc = time.time()
@@ -199,19 +199,21 @@ def load_and_filter(keep_list,config_dict,economy,scenario):
                 list_of_dicts.append(__dict)
     return list_of_dicts
 
-def combine_datasheets(list_of_dicts):
+def combine_datasheets(list_of_dicts,economy):
     """
     Combine individual data sheets into one datasheet.
 
     Combined datasheet will be written to Excel then processed by otoole.
     """
+    tmp_directory = 'tmp/{}'.format(economy)
     try:
-        os.mkdir('./tmp')
+        #os.mkdir('./tmp')
+        os.mkdir(tmp_directory)
     except OSError:
         #print ("Creation of the directory %s failed" % path)
         pass
     else:
-        print ("Successfully created the directory %s " % 'tmp')
+        print ("Successfully created the directory %s " % tmp_directory)
     combined_data = {}
     a_dict = list_of_dicts[0]
     for key in a_dict.keys():
@@ -224,11 +226,12 @@ def combine_datasheets(list_of_dicts):
         combined_data[key] = _dfs
     return combined_data
 
-def write_inputs(combined_data):
+def write_inputs(combined_data,economy):
     """
     Write dictionary of combined data to Excel workbook.
     """
-    with pd.ExcelWriter('./tmp/combined_data.xlsx') as writer:
+    tmp_directory = 'tmp/{}'.format(economy)
+    with pd.ExcelWriter('./{}/combined_data.xlsx'.format(tmp_directory)) as writer:
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
@@ -242,7 +245,8 @@ def demand_emissions(df_data_sheet,emission_map):
     return df_EmissionActivityRatio
 
 # emissions factors
-def make_emissions_factors(combined_data,sector,ccs):
+def make_emissions_factors(combined_data,sector,ccs,economy):
+    tmp_directory = 'tmp/{}'.format(economy)
     demand_sectors = ['AGR','BLD','IND','OWN','NON','PIP','TRN','BNK']
     if sector[0]=="DEMANDS" or sector[0]=="demands":
         _sector = demand_sectors
@@ -272,7 +276,6 @@ def make_emissions_factors(combined_data,sector,ccs):
         df_emissions_activity.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'],inplace=True)
         df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1] = df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1]*2.48
         df_emissions_activity.reset_index(inplace=True)
-        df_emissions_activity.info()
         # end of Korea own-use correction
         df_ccs = df_emissions_activity.loc[df_emissions_activity['TECHNOLOGY'].str.contains('ccs')]
         # Use 0.2 factor for emissions in CCS technologies
@@ -294,18 +297,19 @@ def make_emissions_factors(combined_data,sector,ccs):
         #df_ccs.replace('CO2',"captured",inplace=True)
         # concat the captured emissions to the Emisions Activity Ratio dataframe
         df_emissions_activity = pd.concat([df_emissions_activity,df_ccs_captured])
-        df_emissions_activity.to_csv('tmp/emissions_activity_ratios.csv')
+        df_emissions_activity.to_csv('{}/emissions_activity_ratios.csv'.format(tmp_directory))
         combined_data['EMISSION'] = df_emissions_activity[['EMISSION']].drop_duplicates()
         combined_data['EmissionActivityRatio'] = df_emissions_activity
     return combined_data
 
-def use_otoole(config_dict):
+def use_otoole(config_dict,economy):
     """
     Use otoole to create OSeMOSYS data package.
     """
+    tmp_directory = 'tmp/{}'.format(economy)
     subset_of_years = config_dict['years']
     # prepare using otoole
-    _path='./tmp/combined_data.xlsx'
+    _path='./{}/combined_data.xlsx'.format(tmp_directory)
     reader = ReadExcel()
     writer = WriteDatafile()
     
@@ -336,38 +340,50 @@ def use_otoole(config_dict):
         else:
             filtered_data2[key] = _df
     
-    output_file = './tmp/datafile_from_python.txt'
+    output_file = './{}/datafile_from_python.txt'.format(tmp_directory)
     
     writer.write(filtered_data2, output_file, default_values)
     return
 
-def solve_model(solve_state,solver):
+def solve_model(solve_state,solver,economy):
     """
     Solve OSeMOSYS model.
 
     Currently only GLPK solver is supported.
     """
-    path = "./tmp/"
+    #path = "./tmp/"
+    tmp_directory = 'tmp/{}'.format(economy)
+    # update OSeMOSYS model file with the tmp directory for results
+
     try:
-        os.mkdir(path)
+        os.mkdir(tmp_directory)
     except OSError:
         #print ("Creation of the directory %s failed" % path)
         pass
     else:
-        print ("Successfully created the directory %s " % path)
+        print ("Successfully created the directory %s " % tmp_directory)
     if solve_state == True:
         model_text = resources.read_text('aperc_osemosys','osemosys-fast_1_0.txt')
-        f = open('tmp/model.txt','w')
+        f = open('{}/model.txt'.format(tmp_directory),'w')
+        #f = f.replace("param ResultsPath, symbolic default 'tmp';","param ResultsPath, symbolic default '{}';".format(tmp_directory))
         f.write('%s\n'% model_text)
         f.close()
+        # Read in the file
+        with open('{}/model.txt'.format(tmp_directory), 'r') as file :
+          filedata = file.read()
+        # Replace the target string
+        filedata = filedata.replace("param ResultsPath, symbolic default 'tmp';","param ResultsPath, symbolic default '{}';".format(tmp_directory))
+        # Write the file out again
+        with open('{}/model.txt'.format(tmp_directory), 'w') as file:
+          file.write(filedata)
         if solver == 'GLPK':
-            subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt",shell=True)
+            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model.txt".format(tmp_directory,tmp_directory),shell=True)
         elif solver == 'CBC':
             print("Sorry, CBC is not supported at this time. Please use GLPK.")
-            subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt --wlp tmp/model.lp --check",shell=True)
-            subprocess.run("cbc tmp/model.lp solve -solu tmp/results.sol",shell=True)
+            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model.txt --wlp {}/model.lp --check".format(tmp_directory,tmp_directory,tmp_directory),shell=True)
+            subprocess.run("cbc {}/model.lp solve -solu {}/results.sol".format(tmp_directory,tmp_directory),shell=True)
     else:
-        subprocess.run("glpsol -d tmp/datafile_from_python.txt -m tmp/model.txt --wlp tmp/model.lp --check",shell=True)
+        subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model.txt --wlp {}/model.lp --check".format(tmp_directory,tmp_directory,tmp_directory),shell=True)
     return None
 
 def process_results(economy):
@@ -375,6 +391,7 @@ def process_results(economy):
     Combine OSeMOSYS solution files and write as the result as an Excel file where each result parameter is a tab in the Excel file.
     """
     print('\n-- Preparing results...')
+    tmp_directory = 'tmp/{}'.format(economy)
     parent_directory = "./results/"
     child_directory = economy
     path = os.path.join(parent_directory,child_directory)
@@ -392,7 +409,7 @@ def process_results(economy):
     results_df={}
     for key,value in contents_var.items():
         if contents_var[key]['type'] == 'var':
-            fpath = './tmp/'+key+'.csv'
+            fpath = './{}/'.format(tmp_directory)+key+'.csv'
             #print(fpath)
             _df = pd.read_csv(fpath).reset_index(drop=True)
             results_df[key] = _df
