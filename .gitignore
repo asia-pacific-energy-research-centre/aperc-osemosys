@@ -53,6 +53,6 @@ ose-env/
 .vscode
 *.xlsx
 *.csv
-datafile_from_python.txt
+datafile_from_python*.txt
 model*.txt
 !emissions_factors.csv

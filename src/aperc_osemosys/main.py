@@ -239,7 +239,7 @@ def write_inputs(combined_data,economy):
     Write dictionary of combined data to Excel workbook.
     """
     tmp_directory = 'tmp/{}'.format(economy)
-    with pd.ExcelWriter('./{}/combined_data.xlsx'.format(tmp_directory)) as writer:
+    with pd.ExcelWriter('./{}/combined_data_{}.xlsx'.format(tmp_directory,economy)) as writer:
         for k, v in combined_data.items():
             v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
@@ -318,7 +318,7 @@ def use_otoole(config_dict,economy):
     tmp_directory = 'tmp/{}'.format(economy)
     subset_of_years = config_dict['years']
     # prepare using otoole
-    _path='./{}/combined_data.xlsx'.format(tmp_directory)
+    _path='./{}/combined_data_{}.xlsx'.format(tmp_directory,economy)
     reader = ReadExcel()
     writer = WriteDatafile()
     
@@ -349,7 +349,7 @@ def use_otoole(config_dict,economy):
         else:
             filtered_data2[key] = _df
     
-    output_file = './{}/datafile_from_python.txt'.format(tmp_directory)
+    output_file = './{}/datafile_from_python_{}.txt'.format(tmp_directory,economy)
     
     writer.write(filtered_data2, output_file, default_values)
     return
@@ -386,13 +386,13 @@ def solve_model(solve_state,solver,economy):
         with open('{}/model_{}.txt'.format(tmp_directory,economy), 'w') as file:
           file.write(filedata)
         if solver == 'GLPK':
-            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model_{}.txt".format(tmp_directory,tmp_directory,economy),shell=True)
+            subprocess.run("glpsol -d {}/datafile_from_python_{}.txt -m {}/model_{}.txt".format(tmp_directory,economy,tmp_directory,economy),shell=True)
         elif solver == 'CBC':
             print("Sorry, CBC is not supported at this time. Please use GLPK.")
-            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model_{}.txt --wlp {}/model_{}.lp --check".format(tmp_directory,tmp_directory,economy,tmp_directory,economy),shell=True)
+            subprocess.run("glpsol -d {}/datafile_from_python_{}.txt -m {}/model_{}.txt --wlp {}/model_{}.lp --check".format(tmp_directory,economy,tmp_directory,economy,tmp_directory,economy),shell=True)
             subprocess.run("cbc {}/model_{}.lp solve -solu {}/results_{}.sol".format(tmp_directory,economy,tmp_directory,economy),shell=True)
     else:
-        subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model_{}.txt --wlp {}/model_{}.lp --check".format(tmp_directory,tmp_directory,economy,tmp_directory,economy),shell=True)
+        subprocess.run("glpsol -d {}/datafile_from_python_{}.txt -m {}/model_{}.txt --wlp {}/model_{}.lp --check".format(tmp_directory,economy,tmp_directory,economy,tmp_directory,economy),shell=True)
     return None
 
 def process_results(economy):
