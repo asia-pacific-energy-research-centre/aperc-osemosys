@@ -270,13 +270,14 @@ def make_emissions_factors(combined_data,sector,ccs,economy):
             EmissionActivityRatio = EmissionActivityRatio[all_cols]
         df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
         df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("NE_")]
-        # This is a fix for Korea's Own-use coal products emissions
-        # multiply the projected emissions for 2_coal_products by 2.48
-        # 2.48 = the factor of historical emissions/original projected emissions from 2_coal_products
-        df_emissions_activity.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'],inplace=True)
-        df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1] = df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1]*2.48
-        df_emissions_activity.reset_index(inplace=True)
-        # end of Korea own-use correction
+        if economy=='09_ROK' and sector=='OWN':
+            # This is a fix for Korea's Own-use coal products emissions
+            # multiply the projected emissions for 2_coal_products by 2.48
+            # 2.48 = the factor of historical emissions/original projected emissions from 2_coal_products
+            df_emissions_activity.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'],inplace=True)
+            df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1] = df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1]*2.48
+            df_emissions_activity.reset_index(inplace=True)
+            # end of Korea own-use correction
         df_ccs = df_emissions_activity.loc[df_emissions_activity['TECHNOLOGY'].str.contains('ccs')]
         # Use 0.2 factor for emissions in CCS technologies
         df_ccs_emit = df_ccs.copy()
