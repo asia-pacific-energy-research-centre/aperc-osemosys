@@ -207,7 +207,7 @@ def combine_datasheets(list_of_dicts,economy):
     """
     tmp_directory = 'tmp/{}'.format(economy)
     try:
-        #os.mkdir('./tmp')
+        os.mkdir('./tmp')
         os.mkdir(tmp_directory)
     except OSError:
         #print ("Creation of the directory %s failed" % path)
