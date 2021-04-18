@@ -364,26 +364,26 @@ def solve_model(solve_state,solver,economy):
         print ("Successfully created the directory %s " % tmp_directory)
     if solve_state == True:
         model_text = resources.read_text('aperc_osemosys','osemosys-fast_1_0.txt')
-        f = open('{}/model.txt'.format(tmp_directory),'w')
+        f = open('{}/model_{}.txt'.format(tmp_directory,economy),'w')
         #f = f.replace("param ResultsPath, symbolic default 'tmp';","param ResultsPath, symbolic default '{}';".format(tmp_directory))
         f.write('%s\n'% model_text)
         f.close()
         # Read in the file
-        with open('{}/model.txt'.format(tmp_directory), 'r') as file :
+        with open('{}/model_{}.txt'.format(tmp_directory,economy), 'r') as file :
           filedata = file.read()
         # Replace the target string
         filedata = filedata.replace("param ResultsPath, symbolic default 'tmp';","param ResultsPath, symbolic default '{}';".format(tmp_directory))
         # Write the file out again
-        with open('{}/model.txt'.format(tmp_directory), 'w') as file:
+        with open('{}/model_{}.txt'.format(tmp_directory,economy), 'w') as file:
           file.write(filedata)
         if solver == 'GLPK':
-            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model.txt".format(tmp_directory,tmp_directory),shell=True)
+            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model_{}.txt".format(tmp_directory,tmp_directory,economy),shell=True)
         elif solver == 'CBC':
             print("Sorry, CBC is not supported at this time. Please use GLPK.")
-            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model.txt --wlp {}/model.lp --check".format(tmp_directory,tmp_directory,tmp_directory),shell=True)
-            subprocess.run("cbc {}/model.lp solve -solu {}/results.sol".format(tmp_directory,tmp_directory),shell=True)
+            subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model_{}.txt --wlp {}/model_{}.lp --check".format(tmp_directory,tmp_directory,economy,tmp_directory,economy),shell=True)
+            subprocess.run("cbc {}/model_{}.lp solve -solu {}/results_{}.sol".format(tmp_directory,economy,tmp_directory,economy),shell=True)
     else:
-        subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model.txt --wlp {}/model.lp --check".format(tmp_directory,tmp_directory,tmp_directory),shell=True)
+        subprocess.run("glpsol -d {}/datafile_from_python.txt -m {}/model_{}.txt --wlp {}/model_{}.lp --check".format(tmp_directory,tmp_directory,economy,tmp_directory,economy),shell=True)
     return None
 
 def process_results(economy):

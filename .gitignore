@@ -54,5 +54,5 @@ ose-env/
 *.xlsx
 *.csv
 datafile_from_python.txt
-model.txt
+model*.txt
 !emissions_factors.csv
