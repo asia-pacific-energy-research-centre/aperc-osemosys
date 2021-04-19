@@ -278,8 +278,6 @@ def make_emissions_factors(combined_data,sector,ccs,economy):
             EmissionActivityRatio = EmissionActivityRatio[all_cols]
         df_emissions_activity = pd.concat([df_emissions_activity,EmissionActivityRatio])
         df_emissions_activity = df_emissions_activity[~df_emissions_activity.TECHNOLOGY.str.contains("NE_")]
-        print(economy)
-        print(sector)
         if economy=='09_ROK' and sector[0]=='OWN':
             # This is a fix for Korea's Own-use coal products emissions
             # multiply the projected emissions for 2_coal_products by 2.48
@@ -473,48 +471,61 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 @hello.command()
 @click.argument('economy')
 @click.argument('scenario')
-def combine(economy,scenario):
+@click.option('--i',help="Specify a folder containing results.")
+@click.option('--o',help="Specific a folder for the combined results file.")
+def combine(economy,scenario,i,o):
     """
     Combine results files. This assumes the results are saved in the results folder.
 
     'economy' should be an economy abbreviation, e.g. 03_CDA.
-    'scenario' can be either reference or net-zero.
+    'scenario' can be either reference, net-zero, or all.
     """
-    input = 'results/{}'.format(economy)
-    output = 'results/'
-    model_start = time.strftime("%Y-%m-%d-%H%M%S")
-    files = glob.glob(os.path.join(input,"*.xlsx"))
-    scenario = scenario.lower()
-    _files = [k for k in files if scenario in k]
-    _files = sorted(_files)
-    print(_files)
-    list_of_dicts = []
-    for f in _files:
-        print('Combining {}'.format(f))
-        _dict = pd.read_excel(f,sheet_name=None)
-        list_of_dicts.append(_dict)
-    with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
-        contents_var = yaml.load(open_file, Loader=yaml.FullLoader)
-    combined_data = {}
-    a_dict = list_of_dicts[0]
-    for key in a_dict.keys(): #AccumulatedNewCapacity, CapitalInvestment, etc
-        indices = contents_var[key]['indices']
-        unwanted_members = {'YEAR', 'VALUE'}
-        _indices = [ele for ele in indices if ele not in unwanted_members]
-        list_of_dfs = []
-        for _dict in list_of_dicts: #AccumulatedNewCapacity, AccumulatedNewCapacity, CapitalInvestment, CapitalInvestment, etc, etc
-            try:
-                _df = _dict[key]
-                list_of_dfs.append(_df)
-            except:
-                pass
-        _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
-        combined_data[key] = _dfs
-        __path = economy+'_'+scenario+'_results_{}.xlsx'.format(model_start)
-    _path = os.path.join(output,__path)
-    with pd.ExcelWriter(_path) as writer:
-        for k, v in combined_data.items():
-            v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
+    if i:
+        input = i
+    else:
+        input = 'results/{}'.format(economy)
+    if o:
+        output = o
+    else:
+        output = 'results/'
+    if scenario =='all':
+        scenarios = ['reference','net-zero']
+    else: 
+        scenarios = scenario
+    for scenario in scenarios:
+        model_start = time.strftime("%Y-%m-%d-%H%M%S")
+        files = glob.glob(os.path.join(input,"*.xlsx"))
+        scenario = scenario.lower()
+        _files = [k for k in files if scenario in k]
+        _files = sorted(_files)
+        print(_files)
+        list_of_dicts = []
+        for f in _files:
+            print('Combining {}'.format(f))
+            _dict = pd.read_excel(f,sheet_name=None)
+            list_of_dicts.append(_dict)
+        with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
+            contents_var = yaml.load(open_file, Loader=yaml.FullLoader)
+        combined_data = {}
+        a_dict = list_of_dicts[0]
+        for key in a_dict.keys(): #AccumulatedNewCapacity, CapitalInvestment, etc
+            indices = contents_var[key]['indices']
+            unwanted_members = {'YEAR', 'VALUE'}
+            _indices = [ele for ele in indices if ele not in unwanted_members]
+            list_of_dfs = []
+            for _dict in list_of_dicts: #AccumulatedNewCapacity, AccumulatedNewCapacity, CapitalInvestment, CapitalInvestment, etc, etc
+                try:
+                    _df = _dict[key]
+                    list_of_dfs.append(_df)
+                except:
+                    pass
+            _dfs = pd.concat(list_of_dfs).groupby(_indices).sum().reset_index()
+            combined_data[key] = _dfs
+            __path = economy+'_'+scenario+'_results_{}.xlsx'.format(model_start)
+        _path = os.path.join(output,__path)
+        with pd.ExcelWriter(_path) as writer:
+            for k, v in combined_data.items():
+                v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
     return None
 
 @hello.command()
