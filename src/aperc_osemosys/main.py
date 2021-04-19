@@ -217,7 +217,7 @@ def combine_datasheets(list_of_dicts,economy):
     try:
         os.mkdir('./tmp/{}'.format(economy))
     except OSError:
-        print ("Creation of the directory failed")
+        #print ("Creation of the directory failed")
         pass
     else:
         print ("Successfully created the directory tmp/{}".format(economy))
@@ -471,28 +471,17 @@ def write_results(results_tables,economy,sector,scenario,model_start):
     return None
 
 @hello.command()
-@click.argument('input')
-@click.argument('output')
-@click.option('--scenario','-c',type=click.Choice(['Reference','Net-zero'],case_sensitive=False), help="Select results matching Reference or Net-zero.")
-@click.option('--economy','-e', help="Add a prefix to the output filename, such as the economy name.")
-def combine(input,output,scenario,economy):
+@click.argument('economy')
+@click.argument('scenario')
+def combine(economy,scenario):
     """
-    Combine results files.
-
-    'input' is the folder of results you want to combine to one file. 'input' is relative to the top level directory.
-
-    'output' is the directory where you want to save the single file of combined results.
-
-    'scenario' can be either Reference or Net-zero.
+    Combine results files. This assumes the results are saved in the results folder.
 
     'economy' should be an economy abbreviation, e.g. 03_CDA.
+    'scenario' can be either reference or net-zero.
     """
-    try:
-        os.mkdir(output)
-    except OSError:
-        pass
-    else:
-        print ("Successfully created the directory %s " % output)
+    input = 'results/{}'.format(economy)
+    output = 'results/'
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
     files = glob.glob(os.path.join(input,"*.xlsx"))
     scenario = scenario.lower()
