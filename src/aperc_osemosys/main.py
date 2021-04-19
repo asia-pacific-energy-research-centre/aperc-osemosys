@@ -11,6 +11,7 @@ import time
 import importlib.resources as resources
 import glob
 import shutil
+import pyfiglet
 
 @click.group()
 def hello():
@@ -62,8 +63,10 @@ def solve(economy,ignore,sector,years,scenario,solver,ccs):
     """
     tic = time.time()
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
-    click.echo(click.style('\nWelcome to the APERC Energy Model ',fg='blue',bg='white',bold=True))
-    click.echo(click.style('\n-- Model started at {}.'.format(model_start),fg='cyan'))
+#    click.echo(click.style('\nWelcome to the APERC Energy Model',fg='blue',bg='white',bold=True))
+#    ascii_banner = pyfiglet.figlet_format("Welcome to the APERC Energy Model")
+#    click.echo(click.style('{}'.format(ascii_banner),fg='blue',bg='white',bold=True))
+    click.echo(click.style('\n-- Model started at {}'.format(model_start),fg='cyan'))
     solve_state = True
     config_dict = create_config_dict(economy,ignore,sector,years,scenario)
     keep_list = load_data_config()
@@ -283,7 +286,7 @@ def make_emissions_factors(combined_data,sector,ccs,economy):
             # This is a fix for Korea's Own-use coal products emissions
             # multiply the projected emissions for 2_coal_products by 2.48
             # 2.48 = the factor of historical emissions/original projected emissions from 2_coal_products
-            click.echo(click.style('...Using emissions fix for Korea Own-use coal products.',fg='magenta'))
+            click.echo(click.style('   ...Using emissions fix for Korea Own-use coal products.',fg='magenta'))
             df_emissions_activity.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'],inplace=True)
             df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1] = df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1]*2.48
             df_emissions_activity.reset_index(inplace=True)
@@ -466,7 +469,7 @@ def write_results(results_tables,economy,sector,scenario,model_start):
         with pd.ExcelWriter('./results/{}/{}_results_{}_{}_{}.xlsx'.format(economy,economy,_sector,scenario,model_start)) as writer:
             for k, v in results_tables.items():
                 v.to_excel(writer, sheet_name=k, merge_cells=False)
-        click.echo(click.style('\n...Results are available in the folder /results/{}'.format(economy),fg='yellow'))
+        click.echo(click.style('\n   ...Results are available in the folder /results/{}'.format(economy),fg='yellow'))
     return None
 
 @hello.command()
