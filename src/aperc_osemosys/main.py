@@ -26,7 +26,7 @@ def clean():
 
     Warning: temporary data results files will be deleted!!!
     """
-    print('\n-- Deleting temporary data and results...\n')
+    click.echo(click.style('\n-- Deleting temporary data and results...\n',fg='red'))
     subprocess.run("rm -f tmp/* results/",shell=True)
 
 @hello.command()
@@ -62,8 +62,8 @@ def solve(economy,ignore,sector,years,scenario,solver,ccs):
     """
     tic = time.time()
     model_start = time.strftime("%Y-%m-%d-%H%M%S")
-    print('\n-- Model started at {}.'.format(model_start))
-
+    click.echo(click.style('\nWelcome to the APERC Energy Model ',fg='blue',bg='white',bold=True))
+    click.echo(click.style('\n-- Model started at {}.'.format(model_start),fg='cyan'))
     solve_state = True
     config_dict = create_config_dict(economy,ignore,sector,years,scenario)
     keep_list = load_data_config()
@@ -80,7 +80,8 @@ def solve(economy,ignore,sector,years,scenario,solver,ccs):
             results_tables = process_results(economy)
             write_results(results_tables,economy,sector,scenario,model_start)
     toc = time.time()
-    print('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic))
+    click.echo(click.style('\n-- The model ran for {:.2f} seconds.\n'.format(toc-tic),fg='cyan'))
+    click.echo(click.style('\n-- Solve finished --',fg='green',bold=True))
 
 def create_config_dict(economy,ignore,sector,years,scenario):
     """
@@ -124,7 +125,7 @@ def load_data_config():
     """
     Load the model config file with filepaths.
     """
-    print('\n-- Reading in data configuration...\n')
+    click.echo(click.style('\n-- Reading in data configuration...\n',fg='cyan'))
     with resources.open_text('aperc_osemosys','data_config.yml') as open_file:
         data_config = yaml.load(open_file, Loader=yaml.FullLoader)
     keep_dict={}
@@ -135,7 +136,7 @@ def load_data_config():
                _name = v
                keep_dict[key] = _name
     keep_list = [x if y == 'None' else y for x,y in keep_dict.items()]
-    print('    ...successfully read in data configuration\n')
+    click.echo(click.style('    ...successfully read in data configuration\n',fg='yellow'))
     return keep_list
 
 def load_and_filter(keep_list,config_dict,economy,scenario):
@@ -146,7 +147,7 @@ def load_and_filter(keep_list,config_dict,economy,scenario):
     """
     subset_of_economies = economy
     scenario = scenario
-    print('Solving {} scenario...\n'.format(scenario))
+    click.echo(click.style('-- Solving {} scenario...\n'.format(scenario),fg='cyan'))
     with resources.open_text('aperc_osemosys','model_config.yml') as open_file:
         contents = yaml.load(open_file, Loader=yaml.FullLoader)
     list_of_dicts = []
@@ -154,7 +155,7 @@ def load_and_filter(keep_list,config_dict,economy,scenario):
         if key in config_dict['sector']:
             _mypath = Path(value)
             if _mypath.exists():
-                print(value)
+                click.echo(click.style('   '+value,fg='yellow'))
                 _path = value
                 _dict = pd.read_excel(_path,sheet_name=None) # creates dict of dataframes
                 __dict = {k: _dict[k] for k in keep_list}
@@ -212,7 +213,7 @@ def combine_datasheets(list_of_dicts,economy):
         #print ("Creation of the directory %s failed" % path)
         pass
     else:
-        print ("Successfully created the directory tmp")
+        click.echo(click.style("Successfully created the directory tmp",fg='yellow'))
 
     try:
         os.mkdir('./tmp/{}'.format(economy))
@@ -220,7 +221,7 @@ def combine_datasheets(list_of_dicts,economy):
         #print ("Creation of the directory failed")
         pass
     else:
-        print ("Successfully created the directory tmp/{}".format(economy))
+        click.echo(click.style("Successfully created the directory tmp/{}".format(economy),fg='yellow'))
 
     combined_data = {}
     a_dict = list_of_dicts[0]
@@ -282,7 +283,7 @@ def make_emissions_factors(combined_data,sector,ccs,economy):
             # This is a fix for Korea's Own-use coal products emissions
             # multiply the projected emissions for 2_coal_products by 2.48
             # 2.48 = the factor of historical emissions/original projected emissions from 2_coal_products
-            print('Using emissions fix for Korea Own-use coal products.')
+            click.echo(click.style('...Using emissions fix for Korea Own-use coal products.',fg='magenta'))
             df_emissions_activity.set_index(['REGION','TECHNOLOGY','EMISSION','MODE_OF_OPERATION'],inplace=True)
             df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1] = df_emissions_activity.loc['09_ROK','OWN_2_coal_products','2_coal_products_CO2',1]*2.48
             df_emissions_activity.reset_index(inplace=True)
@@ -371,7 +372,7 @@ def solve_model(solve_state,solver,economy):
         #print ("Creation of the directory %s failed" % path)
         pass
     else:
-        print ("Successfully created the directory %s " % tmp_directory)
+        click.echo(click.style("Successfully created the directory %s " % tmp_directory,fg='yellow'))
     if solve_state == True:
         model_text = resources.read_text('aperc_osemosys','osemosys-fast_1_0.txt')
         f = open('{}/model_{}.txt'.format(tmp_directory,economy),'w')
@@ -400,7 +401,7 @@ def process_results(economy):
     """
     Combine OSeMOSYS solution files and write as the result as an Excel file where each result parameter is a tab in the Excel file.
     """
-    print('\n-- Preparing results...')
+    click.echo(click.style('\n-- Preparing results...',fg='cyan'))
     tmp_directory = 'tmp/{}'.format(economy)
     parent_directory = "./results/"
     child_directory = economy
@@ -411,7 +412,7 @@ def process_results(economy):
         #print ("Creation of the directory %s failed" % path)
         pass
     else:
-        print ("Successfully created the directory %s " % path)
+        click.echo(click.style("Successfully created the directory %s " % path,fg='yellow'))
 
     with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
         contents_var = yaml.load(open_file, Loader=yaml.FullLoader)
@@ -465,7 +466,7 @@ def write_results(results_tables,economy,sector,scenario,model_start):
         with pd.ExcelWriter('./results/{}/{}_results_{}_{}_{}.xlsx'.format(economy,economy,_sector,scenario,model_start)) as writer:
             for k, v in results_tables.items():
                 v.to_excel(writer, sheet_name=k, merge_cells=False)
-        print('\n-- Results are available in the folder /results/{} \n'.format(economy))
+        click.echo(click.style('\n...Results are available in the folder /results/{}'.format(economy),fg='yellow'))
     return None
 
 @hello.command()
@@ -498,10 +499,10 @@ def combine(economy,scenario,i,o):
         scenario = scenario.lower()
         _files = [k for k in files if scenario in k]
         _files = sorted(_files)
-        print(_files)
+        click.echo(click.style(_files,fg='yellow'))
         list_of_dicts = []
         for f in _files:
-            print('Combining {}'.format(f))
+            click.echo(click.style('Combining {}'.format(f),fg='yellow'))
             _dict = pd.read_excel(f,sheet_name=None)
             list_of_dicts.append(_dict)
         with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
@@ -542,7 +543,7 @@ def move(path_from,path_to):
     except OSError:
         pass
     else:
-        print ("Successfully created the directory %s " % path_to)
+        click.echo(click.style("Successfully created the directory %s " % path_to, fg='cyan'))
     for root, dirs, files in os.walk(path_from):
         for file in files:
           path_file = os.path.join(root,file)
