@@ -11,7 +11,7 @@ import time
 import importlib.resources as resources
 import glob
 import shutil
-import pyfiglet
+import colorama
 
 @click.group()
 def hello():
