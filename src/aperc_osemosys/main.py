@@ -496,15 +496,16 @@ def combine(economy,scenario,i,o):
     else: 
         scenarios = scenario
     for scenario in scenarios:
+        click.echo(click.style('\n-- Combining files for {} for scenario {}'.format(economy,scenario),fg='cyan'))
         model_start = time.strftime("%Y-%m-%d-%H%M%S")
         files = glob.glob(os.path.join(input,"*.xlsx"))
         scenario = scenario.lower()
         _files = [k for k in files if scenario in k]
         _files = sorted(_files)
-        click.echo(click.style('{}'.format(_files),fg='yellow'))
+        #click.echo(click.style('{}'.format(_files),fg='yellow'))
         list_of_dicts = []
         for f in _files:
-            click.echo(click.style('Combining {}'.format(f),fg='yellow'))
+            click.echo(click.style('...Combining file {}'.format(f),fg='yellow'))
             _dict = pd.read_excel(f,sheet_name=None)
             list_of_dicts.append(_dict)
         with resources.open_text('aperc_osemosys','results_config.yml') as open_file:
@@ -529,6 +530,7 @@ def combine(economy,scenario,i,o):
         with pd.ExcelWriter(_path) as writer:
             for k, v in combined_data.items():
                 v.to_excel(writer, sheet_name=k, index=False, merge_cells=False)
+    click.echo(click.style('\n-- Complete --'.format(economy,scenario),fg='green'))
     return None
 
 @hello.command()
