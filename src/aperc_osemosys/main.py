@@ -502,7 +502,7 @@ def combine(economy,scenario,i,o):
         scenario = scenario.lower()
         _files = [k for k in files if scenario in k]
         _files = sorted(_files)
-        click.echo(click.style(_files,fg='yellow'))
+        click.echo(click.style('{}'.format(_files),fg='yellow'))
         list_of_dicts = []
         for f in _files:
             click.echo(click.style('Combining {}'.format(f),fg='yellow'))
