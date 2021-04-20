@@ -11,7 +11,6 @@ import time
 import importlib.resources as resources
 import glob
 import shutil
-import colorama
 
 @click.group()
 def hello():
