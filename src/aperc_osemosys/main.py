@@ -468,6 +468,8 @@ def write_results(results_tables,economy,sector,scenario,model_start):
         with pd.ExcelWriter('./results/{}/{}_results_{}_{}_{}.xlsx'.format(economy,economy,_sector,scenario,model_start)) as writer:
             for k, v in results_tables.items():
                 v.to_excel(writer, sheet_name=k, merge_cells=False)
+        sector_list = " ".join(sector)
+        click.echo(click.style('\n   ...Results are available for: {} & {}'.format(economy,sector_list),fg='yellow'))
         click.echo(click.style('\n   ...Results are available in the folder /results/{}'.format(economy),fg='yellow'))
     return None
 
