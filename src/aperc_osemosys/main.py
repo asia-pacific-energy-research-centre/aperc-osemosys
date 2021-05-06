@@ -476,9 +476,9 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 @hello.command()
 @click.argument('economy')
 @click.argument('scenario')
-@click.option('--i',help="Specify a folder containing results.")
-@click.option('--o',help="Specific a folder for the combined results file.")
-def combine(economy,scenario,i,o):
+#@click.option('--i',help="Specify a folder containing results.")
+#@click.option('--o',help="Specific a folder for the combined results file.")
+def combine(economy,scenario):
     """
     Combine results files. This assumes the results are saved in the results folder.
 
@@ -488,19 +488,11 @@ def combine(economy,scenario,i,o):
 
     'scenario' can be either reference, net-zero, or all.
     """
-    if i:
-        input = i
-    else:
-        input = 'results/{}'.format(economy)
-    if o:
-        output = o
-    else:
-        output = 'results/'
     if scenario =='all':
         scenarios = ['reference','net-zero']
     else: 
         scenarios = scenario
-    if economy=='00_APEC' or '00_apec':
+    if economy=='00_APEC':
         input = 'results/'
         output = 'results/00_APEC'
         try:
@@ -510,6 +502,9 @@ def combine(economy,scenario,i,o):
             pass
         else:
             click.echo(click.style("Successfully created the directory {} ".format(output),fg='yellow'))
+    else:
+        input = 'results/{}'.format(economy)
+        output = 'results/'
     for scenario in scenarios:
         click.echo(click.style('\n-- Combining files for {} for scenario {}'.format(economy,scenario),fg='cyan'))
         model_start = time.strftime("%Y-%m-%d-%H%M%S")
