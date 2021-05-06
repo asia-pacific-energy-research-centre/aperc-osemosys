@@ -483,6 +483,9 @@ def combine(economy,scenario,i,o):
     Combine results files. This assumes the results are saved in the results folder.
 
     'economy' should be an economy abbreviation, e.g. 03_CDA.
+    
+    Use "00_APEC" or "00_apec" to combine all economies". Result files must be in the `results` folder, not in economy subfolders.
+
     'scenario' can be either reference, net-zero, or all.
     """
     if i:
@@ -497,6 +500,16 @@ def combine(economy,scenario,i,o):
         scenarios = ['reference','net-zero']
     else: 
         scenarios = scenario
+    if economy=='00_APEC' or '00_apec':
+        input = 'results/'
+        output = 'results/00_APEC'
+        try:
+            os.mkdir(output)
+        except OSError:
+        #print ("Creation of the directory %s failed" % output)
+            pass
+        else:
+            click.echo(click.style("Successfully created the directory {} ".format(output),fg='yellow'))
     for scenario in scenarios:
         click.echo(click.style('\n-- Combining files for {} for scenario {}'.format(economy,scenario),fg='cyan'))
         model_start = time.strftime("%Y-%m-%d-%H%M%S")
