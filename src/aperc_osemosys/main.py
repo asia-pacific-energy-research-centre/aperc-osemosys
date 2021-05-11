@@ -476,9 +476,9 @@ def write_results(results_tables,economy,sector,scenario,model_start):
 @hello.command()
 @click.argument('economy')
 @click.argument('scenario')
-#@click.option('--i',help="Specify a folder containing results.")
-#@click.option('--o',help="Specific a folder for the combined results file.")
-def combine(economy,scenario):
+@click.option('--xs',help="Exclude a sector.")
+#@click.option('--xe',help="Exclude an economy.")
+def combine(economy,scenario,xs):
     """
     Combine results files. This assumes the results are saved in the results folder.
 
@@ -491,7 +491,7 @@ def combine(economy,scenario):
     if scenario =='all':
         scenarios = ['reference','net-zero']
     else: 
-        scenarios = scenario
+        scenarios = [scenario]
     if economy=='00_APEC':
         input = 'results/'
         output = 'results/00_APEC'
@@ -510,7 +510,10 @@ def combine(economy,scenario):
         model_start = time.strftime("%Y-%m-%d-%H%M%S")
         files = glob.glob(os.path.join(input,"*.xlsx"))
         scenario = scenario.lower()
-        _files = [k for k in files if scenario in k]
+        if xs is None:
+            _files = [k for k in files if scenario in k]
+        else:
+            _files = [k for k in files if scenario in k if xs not in k]
         _files = sorted(_files)
         #click.echo(click.style('{}'.format(_files),fg='yellow'))
         list_of_dicts = []
