@@ -549,7 +549,10 @@ def combine(economy,scenario,xs):
 @hello.command()
 @click.argument('path_from')
 @click.argument('path_to')
-def move(path_from,path_to):
+@click.option('--i')
+@click.argument('sector')
+@click.argument('scenario')
+def move(path_from,path_to,i,sector,scenario):
     """
     Moves files from subdirectories from PATH_FROM to PATH_TO.
 
@@ -561,8 +564,40 @@ def move(path_from,path_to):
         pass
     else:
         click.echo(click.style("Successfully created the directory %s " % path_to, fg='cyan'))
-    for root, dirs, files in os.walk(path_from):
-        for file in files:
-          path_file = os.path.join(root,file)
-          if root != path_to:
-            shutil.copy2(path_file,path_to)
+    if scenario == 'all':
+        _scenario = ['reference','net-zero']
+    else:
+        _scenario = [scenario]
+    for c in _scenario:
+        root = os.getcwd()
+        path_file=(os.path.join(root,path_from))
+        destination = (os.path.join(root,path_to))
+        file_path = os.path.join(path_from,"**","*"+sector+"_"+c+"*")
+        files = glob.glob(file_path)
+        for f in files:
+            try:
+                shutil.copy2(f,destination)
+                click.echo(click.style('Copying {}'.format(f),fg='yellow'))
+            except OSError as e:
+                print("Error: %s : %s" % (f, e.strerror))
+
+@hello.command()
+@click.argument('input')
+@click.argument('sector')
+@click.argument('scenario')
+def delete(input,sector,scenario):
+    if scenario == 'all':
+        _scenario = ['reference','net-zero']
+    else:
+        _scenario = [scenario]
+    for c in _scenario:
+        path_file = os.path.join(input,"**","*"+sector+"_"+c+"*")
+        files = glob.glob(path_file)
+        print(path_file)
+        print(files)
+        for f in files:
+            try:
+                click.echo(click.style('Removing {}'.format(f),fg='red'))
+                os.remove(f)
+            except OSError as e:
+                print("Error: %s : %s" % (f, e.strerror))
