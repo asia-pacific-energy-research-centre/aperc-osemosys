@@ -606,7 +606,7 @@ def delete(input,sector,scenario):
 @click.option('-y')
 @click.option('-c')
 @click.option('-e')
-def loop(year,scenario,economy):
+def loop(y,c,e):
     sectors = ['AGR','BLD','IND','TRN','NON','OWN','PIP','HYD','BNK','REF','SUP']
     for s in sectors:
         subprocess.run("model solve -y {} -c {} -e {} -s {}".format(y,c,e,s),shell=True)
