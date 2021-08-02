@@ -66,6 +66,8 @@ def solve(economy,ignore,sector,years,scenario,solver,ccs):
 #    ascii_banner = pyfiglet.figlet_format("Welcome to the APERC Energy Model")
 #    click.echo(click.style('{}'.format(ascii_banner),fg='blue',bg='white',bold=True))
     click.echo(click.style('\n-- Model started at {}'.format(model_start),fg='cyan'))
+    shutil.rmtree('./tmp')
+    click.echo(click.style('\n-- Cleared tmp directory',fg='yellow'))
     solve_state = True
     config_dict = create_config_dict(economy,ignore,sector,years,scenario)
     keep_list = load_data_config()
@@ -601,3 +603,14 @@ def delete(input,sector,scenario):
                 os.remove(f)
             except OSError as e:
                 print("Error: %s : %s" % (f, e.strerror))
+
+@hello.command()
+@click.argument('year')
+@click.argument('scenario')
+@click.argument('economy')
+def loop(year,scenario,economy):
+    sectors = ['AGR','BLD','IND','TRN','NON','OWN','PIP','HYD','BNK','REF','SUP']
+    for s in sectors:
+        subprocess.run("model solve -y {} -c {} -e {} -s {}".format(year,scenario,economy,s),shell=True)
+        subprocess.run("model combine {} {}".format(economy,scenario),shell=True)
+    click.echo(click.style("FULL MODEL RUN COMPLETE",fg='green'))
