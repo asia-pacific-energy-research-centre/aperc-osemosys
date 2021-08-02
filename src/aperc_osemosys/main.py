@@ -604,8 +604,8 @@ def delete(input,sector,scenario):
 
 @hello.command()
 @click.option('-y')
-@click.argument('-c')
-@click.argument('-e')
+@click.option('-c')
+@click.option('-e')
 def loop(year,scenario,economy):
     sectors = ['AGR','BLD','IND','TRN','NON','OWN','PIP','HYD','BNK','REF','SUP']
     for s in sectors:
