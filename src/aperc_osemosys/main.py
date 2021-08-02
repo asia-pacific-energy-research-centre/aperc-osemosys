@@ -610,5 +610,5 @@ def loop(y,c,e):
     sectors = ['AGR','BLD','IND','TRN','NON','OWN','PIP','HYD','BNK','REF','SUP']
     for s in sectors:
         subprocess.run("model solve -y {} -c {} -e {} -s {}".format(y,c,e,s),shell=True)
-        subprocess.run("model combine {} {}".format(e,c),shell=True)
+    subprocess.run("model combine {} {}".format(e,c),shell=True)
     click.echo(click.style("FULL MODEL RUN COMPLETE",fg='green'))
